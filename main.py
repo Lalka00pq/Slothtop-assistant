@@ -1,6 +1,3 @@
-def main():
-    print("Hello from ai-voice-assistant!")
-
-
+from src.app.voice.voice_recognition import record_and_transcribe
 if __name__ == "__main__":
-    main()
+    record_and_transcribe()
