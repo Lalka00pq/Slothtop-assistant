@@ -2,10 +2,9 @@ import sounddevice as sd
 import numpy as np
 import scipy.io.wavfile as wav
 import queue
-import threading
-import time
 import tempfile
 from faster_whisper import WhisperModel
+import torch
 # Настройки
 SAMPLERATE = 16000
 BLOCK_DURATION = 10  # Секунд аудио в буфере
@@ -13,8 +12,7 @@ BLOCK_DURATION = 10  # Секунд аудио в буфере
 q = queue.Queue()
 recording = True
 
-# Инициализируем модель
-model = WhisperModel("base", compute_type="int8")
+model = WhisperModel("base", compute_type="int8", device="cuda" if torch.cuda.is_available() else "cpu")
 
 
 def callback(indata, frames, time_info, status):
@@ -40,7 +38,6 @@ def record_and_transcribe():
                         audio_buffer = audio_buffer[SAMPLERATE *
                                                     BLOCK_DURATION:]
 
-                        # Сохраняем временный WAV файл
                         with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmpfile:
                             wav.write(tmpfile.name, SAMPLERATE, block)
                             print("Распознаю...")
