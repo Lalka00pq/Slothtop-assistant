@@ -5,8 +5,10 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "dotenv>=0.9.9",
     "faster-whisper>=1.1.1",
     "mistralai>=1.8.2",
+    "pydantic>=2.11.7",
     "scipy>=1.15.3",
     "sounddevice>=0.5.2",
     "torch>=2.7.1",

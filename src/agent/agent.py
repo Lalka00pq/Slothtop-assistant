@@ -1,12 +1,17 @@
+# python
 import os
-
+# 3rd party
 from mistralai import Mistral
+from dotenv import load_dotenv
 
-api_key = os.environ["MISTRAL_API_KEY"]
-class Agent(api_key, model_name='mistral-large-v0.2'):
-    def __init__(self):
+load_dotenv()
+
+api_key = os.getenv("MISTRAL_API_KEY")
+
+class Agent:
+    def __init__(self, api_key=api_key, model_name='mistral-small-latest'):
         self.mistral = Mistral(api_key=api_key)
-        self.model = 'mistral-large-v0.2'
+        self.model = model_name
         self.system_message = (
             "You are a helpful assistant. "
             "Answer the user's questions in a concise and informative manner."
@@ -14,6 +19,10 @@ class Agent(api_key, model_name='mistral-large-v0.2'):
             "If the question is not clear, ask for clarification."
             "You should answer in Russian and shortly."
         )
+        self.agent = {
+            "role": "system",
+            "content": self.system_message
+        }
     def get_response(self, question):
         chat_response = self.mistral.chat.complete(
             model=self.model,
