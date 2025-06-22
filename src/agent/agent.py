@@ -1,33 +1,13 @@
 # python
 import os
+# project
+from src.tools.tools import turn_of_pc, reload_pc, open_app, close_app
 # 3rd party
-from mistralai import Mistral
+from smolagents import HfApiModel, CodeAgent
+from huggingface_hub import login
 from dotenv import load_dotenv
-
 load_dotenv()
-
-api_key = os.getenv("MISTRAL_API_KEY")
-
-class Agent:
-    def __init__(self, api_key=api_key, model_name='mistral-small-latest'):
-        self.mistral = Mistral(api_key=api_key)
-        self.model = model_name
-        self.system_message = (
-            "You are a helpful assistant. "
-            "Answer the user's questions in a concise and informative manner."
-            "If you don't know the answer, say 'I don't know'."
-            "If the question is not clear, ask for clarification."
-            "You should answer in Russian and shortly."
-        )
-        self.agent = {
-            "role": "system",
-            "content": self.system_message
-        }
-    def get_response(self, question):
-        chat_response = self.mistral.chat.complete(
-            model=self.model,
-            messages=[
-                {"role": "user", "content": question}
-            ]
-        )
-        return chat_response.choices[0].message.content
+api_key = os.getenv("HF_API_KEY")
+login(token=api_key)
+tools = [turn_of_pc, open_app, close_app, reload_pc]
+agent = CodeAgent(tools=tools, model=HfApiModel())
