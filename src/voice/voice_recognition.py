@@ -1,3 +1,6 @@
+#project
+from src.agent.agent import agent
+# 3rd party
 import sounddevice as sd
 import numpy as np
 import scipy.io.wavfile as wav
@@ -5,6 +8,7 @@ import queue
 import tempfile
 from faster_whisper import WhisperModel
 import torch
+
 # Настройки
 SAMPLERATE = 16000
 BLOCK_DURATION = 10  # Секунд аудио в буфере
@@ -45,6 +49,7 @@ def record_and_transcribe():
 
                             for seg in segments:
                                 print(f"{seg.text.strip()}")
+                                agent.run(seg.text.strip())
 
                 except queue.Empty:
                     pass
