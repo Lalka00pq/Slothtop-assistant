@@ -42,3 +42,4 @@ def close_app(app:str) -> None:
         close(app.lower())
     except Exception as e:
         print(f"Error closing {app}: {e}")
+
