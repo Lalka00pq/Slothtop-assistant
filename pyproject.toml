@@ -9,9 +9,11 @@ dependencies = [
     "dotenv>=0.9.9",
     "duckduckgo-search>=8.0.4",
     "faster-whisper>=1.1.1",
+    "langchain>=0.3.26",
+    "langchain-community>=0.3.26",
+    "langchain-ollama>=0.3.3",
     "pydantic>=2.11.7",
     "scipy>=1.15.3",
-    "smolagents>=1.18.0",
     "sounddevice>=0.5.2",
     "torch>=2.7.1",
 ]

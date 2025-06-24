@@ -1,9 +1,10 @@
 # python
 import os
 # 3rd party
-from smolagents import tool
+
 from AppOpener import open, close
-@tool
+
+
 def turn_of_pc(time: int = 5) -> None:
     """Tool for turning off the PC.
     Args:
@@ -11,7 +12,7 @@ def turn_of_pc(time: int = 5) -> None:
     """
     os.system(f"shutdown /s /t {time}")
 
-@tool
+
 def reload_pc(time: int = 5) -> None:
     """Tool for reloading the PC.
     Args:
@@ -19,8 +20,8 @@ def reload_pc(time: int = 5) -> None:
     """
     os.system(f"shutdown /r /t {time}")
 
-@tool
-def open_app(app:str) -> None:
+
+def open_app(app: str) -> None:
     """
     Tool for opening an application.
     Args:
@@ -31,8 +32,8 @@ def open_app(app:str) -> None:
     except Exception as e:
         print(f"Error opening {app}: {e}")
 
-@tool
-def close_app(app:str) -> None:
+
+def close_app(app: str) -> None:
     """
     Tool for closing an application.
     Args:
@@ -42,4 +43,3 @@ def close_app(app:str) -> None:
         close(app.lower())
     except Exception as e:
         print(f"Error closing {app}: {e}")
-

@@ -1,20 +1,28 @@
 # python
 import os
 # project
-from src.tools.tools import turn_of_pc, reload_pc, open_app, close_app
+# from src.tools.tools import turn_of_pc, reload_pc, open_app, close_app
 # 3rd party
-from smolagents import HfApiModel, CodeAgent, DuckDuckGoSearchTool
-from huggingface_hub import login
+from langchain_ollama import OllamaLLM
+from langchain_core.prompts import ChatPromptTemplate
 from dotenv import load_dotenv
 # Login to Hugging Face
 load_dotenv()
-api_key = os.getenv("HF_API_KEY")
-login(token=api_key)
+# os.environ["HUGGING_FACE_HUB_TOKEN"] = os.getenv("HUGGING_FACE_HUB_TOKEN")
 
-tools = [turn_of_pc,
-         open_app,
-         close_app,
-         reload_pc,
-         DuckDuckGoSearchTool(),
-         ]
-agent = CodeAgent(tools=tools, model=HfApiModel())
+template = """Question: {question}
+
+Answer: Let's think step by step."""
+# tools = [turn_of_pc,
+#          open_app,
+#          close_app,
+#          reload_pc,
+#          ]
+prompt = ChatPromptTemplate.from_template(template)
+model = OllamaLLM(
+    model="mistral-nemo",
+)
+result = model.invoke("What is the capital of France?")
+# chain = prompt | model
+# chain.invoke({"question": "What is the capital of France?"})
+print(result)
