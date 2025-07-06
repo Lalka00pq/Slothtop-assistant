@@ -1,5 +1,6 @@
+from typing import Optional
 # project
-from src.tools.tools import open_app_tool, close_app_tool, turn_off_pc_tool, restart_pc_tool, multiply_tool
+from src.tools.tools import open_app_tool, close_app_tool, turn_off_pc_tool, restart_pc_tool
 from src.tools.web_work_tools import search_web_tool
 # 3rd party
 from langchain_ollama.chat_models import ChatOllama as OllamaLLM
@@ -8,7 +9,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.tools import BaseTool
 
 
-def create_agent(tools: list[BaseTool] = None) -> AgentExecutor:
+def create_agent(tools: Optional[list[BaseTool]] = None) -> AgentExecutor:
     """Creates an agent for interacting with the user and performing tasks.
 
     Returns:
@@ -25,13 +26,11 @@ def create_agent(tools: list[BaseTool] = None) -> AgentExecutor:
         close_app_tool,
         turn_off_pc_tool,
         restart_pc_tool,
-        multiply_tool,
         search_web_tool
     ]
     llm = OllamaLLM(
         model="mistral-nemo"
     )
-    llm = llm.bind_tools(tools)
     agent = create_tool_calling_agent(llm=llm, tools=tools, prompt=prompt)
     agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
     return agent_executor

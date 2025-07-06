@@ -9,7 +9,7 @@ def main() -> None:
     agent = create_agent()
 
     result = agent.invoke(
-        {"input": "can you search the web for the latest news on AI?. Give me only the first 3 results."})
+        {"input": "can you open Discord."})
 
     print(result)
 

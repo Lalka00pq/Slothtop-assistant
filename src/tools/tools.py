@@ -16,20 +16,6 @@ def turn_off_pc_tool(time: int = 5) -> None:
 
 
 @tool
-def multiply_tool(first_number: int, second_number: int) -> int:
-    """Tool for multiplying two numbers.
-
-    Args:
-        first_number (int): The first number.
-        second_number (int): The second number.
-
-    Returns:
-        int: The product of the two numbers.
-    """
-    return first_number * second_number
-
-
-@tool
 def restart_pc_tool(time: int = 5) -> None:
     """Tool for restarting the PC.
 
@@ -40,7 +26,7 @@ def restart_pc_tool(time: int = 5) -> None:
 
 
 @tool
-def open_app_tool(app: str) -> str:
+def open_app_tool(app: str) -> None:
     """Tool for opening a computer application.
 
     Args:
@@ -50,7 +36,7 @@ def open_app_tool(app: str) -> str:
     """
     try:
         open_app(app.lower())
-        return f'{app} opened successfully.'
+        print(f'{app} opened successfully.')
     except Exception as e:
         print(f"Error opening {app}: {e}")
 
