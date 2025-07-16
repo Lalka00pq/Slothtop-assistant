@@ -1,5 +1,3 @@
-#project
-from src.agent.agent import agent
 # 3rd party
 import sounddevice as sd
 import numpy as np
@@ -16,7 +14,8 @@ BLOCK_DURATION = 10  # Секунд аудио в буфере
 q = queue.Queue()
 recording = True
 
-model = WhisperModel("base", compute_type="int8", device="cuda" if torch.cuda.is_available() else "cpu")
+model = WhisperModel("base", compute_type="int8",
+                     device="cuda" if torch.cuda.is_available() else "cpu")
 
 
 def callback(indata, frames, time_info, status):
@@ -26,7 +25,7 @@ def callback(indata, frames, time_info, status):
     q.put(indata.copy())
 
 
-def record_and_transcribe():
+def record_and_transcribe() -> None:
     with sd.InputStream(samplerate=SAMPLERATE, channels=1, callback=callback):
         print("Говорите... (нажмите Ctrl+C для выхода)")
         audio_buffer = np.empty((0, 1), dtype=np.float32)
@@ -49,7 +48,10 @@ def record_and_transcribe():
 
                             for seg in segments:
                                 print(f"{seg.text.strip()}")
-                                agent.run(seg.text.strip())
+                                # result = agent.invoke(
+                                #     {"input": seg.text.strip()})
+                                # print(
+                                #     f"Результат: {result['output'] if 'output' in result else 'Нет результата'}")
 
                 except queue.Empty:
                     pass

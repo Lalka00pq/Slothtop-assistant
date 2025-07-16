@@ -1,5 +1,4 @@
 # project
-# from src.voice.voice_recognition import record_and_transcribe
 from src.agent.agent import create_agent
 
 
@@ -9,7 +8,7 @@ def main() -> None:
     agent = create_agent()
 
     result = agent.invoke(
-        {"input": "can you open Discord."})
+        {"input": "Restart the computer in 5 seconds."})
 
     print(result)
 

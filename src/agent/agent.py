@@ -1,3 +1,4 @@
+# python
 from typing import Optional
 # project
 from src.tools.tools import open_app_tool, close_app_tool, turn_off_pc_tool, restart_pc_tool
@@ -26,7 +27,7 @@ def create_agent(tools: Optional[list[BaseTool]] = None) -> AgentExecutor:
         close_app_tool,
         turn_off_pc_tool,
         restart_pc_tool,
-        search_web_tool
+        # search_web_tool
     ]
     llm = OllamaLLM(
         model="mistral-nemo"
