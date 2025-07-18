@@ -2,7 +2,7 @@
 from typing import Optional
 # project
 from src.tools.tools import open_app_tool, close_app_tool, turn_off_pc_tool, restart_pc_tool
-from src.tools.web_work_tools import search_web_tool
+from src.tools.obsidian_search_tool import get_info_from_vault_tool
 # 3rd party
 from langchain_ollama.chat_models import ChatOllama as OllamaLLM
 from langchain.agents import create_tool_calling_agent, AgentExecutor
@@ -27,11 +27,13 @@ def create_agent(tools: Optional[list[BaseTool]] = None) -> AgentExecutor:
         close_app_tool,
         turn_off_pc_tool,
         restart_pc_tool,
-        # search_web_tool
+        get_info_from_vault_tool
     ]
     llm = OllamaLLM(
-        model="mistral-nemo"
+        # model="mistral-nemo"
+        model="llama3.2"
     )
     agent = create_tool_calling_agent(llm=llm, tools=tools, prompt=prompt)
-    agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
+    agent_executor = AgentExecutor(
+        agent=agent, tools=tools, verbose=True, return_intermediate_steps=True)
     return agent_executor
