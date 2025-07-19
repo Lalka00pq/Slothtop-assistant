@@ -8,7 +8,7 @@ def main() -> None:
     agent = create_agent()
 
     result = agent.invoke(
-        {"input": "Can you search through my Obsidian vault. I want to find find how many notes I have?"})
+        {"input": "What can you say me about this langchain?"})
 
     print(result['output'] if 'output' in result else 'No result')
 
