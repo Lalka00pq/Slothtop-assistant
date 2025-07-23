@@ -8,7 +8,7 @@ def main() -> None:
     agent = create_agent()
 
     result = agent.invoke(
-        {"input": "What can you say me about this langchain?"})
+        {"input": "What can you say me about the langchain framework?"})
 
     print(result['output'] if 'output' in result else 'No result')
 

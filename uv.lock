@@ -19,6 +19,7 @@ dependencies = [
     { name = "langchain" },
     { name = "langchain-community" },
     { name = "langchain-ollama" },
+    { name = "langchain-tavily" },
     { name = "pydantic" },
     { name = "scipy" },
     { name = "sounddevice" },
@@ -34,6 +35,7 @@ requires-dist = [
     { name = "langchain", specifier = ">=0.3.26" },
     { name = "langchain-community", specifier = ">=0.3.26" },
     { name = "langchain-ollama", specifier = ">=0.3.3" },
+    { name = "langchain-tavily", specifier = ">=0.2.10" },
     { name = "pydantic", specifier = ">=2.11.7" },
     { name = "scipy", specifier = ">=1.15.3" },
     { name = "sounddevice", specifier = ">=0.5.2" },
@@ -696,6 +698,21 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/59/9f/6683f69f14b0cde3556c6b7752fb290bfce743981dc1312efa924619365f/langchain_ollama-0.3.3.tar.gz", hash = "sha256:7d6ed75bfb706751b83173fe886b72ae25bb0b1bd7f3eb2622821c4149f7807b", size = 21913 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/84/6f/ab7a470522e27b95ed008eb9ef81b1ab55321f3f3aff21ca0109aae53cdf/langchain_ollama-0.3.3-py3-none-any.whl", hash = "sha256:f1c745a4b59d36bb51995c23c6b0fbc20f71956715659425ab88639a14b213cd", size = 21156 },
+]
+
+[[package]]
+name = "langchain-tavily"
+version = "0.2.10"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "aiohttp" },
+    { name = "langchain" },
+    { name = "langchain-core" },
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/4d/89/41ed888866279c307397a795e015628e1a3d442bb99a0e23419bd89d3b53/langchain_tavily-0.2.10.tar.gz", hash = "sha256:34eb654c696ba5a8ab552c78d00d7cc06d51476af9c5d9a2ccbef980e71381ba", size = 22183 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/4b/26/5d4dfcf3c08878e8b88d18925b49e35f7ec97fd9c881ebf26da30e8ecfd5/langchain_tavily-0.2.10-py3-none-any.whl", hash = "sha256:87dab3824735bd98fa95c89979ef8df1002959d2e265c67de0e9249badaa3956", size = 25894 },
 ]
 
 [[package]]

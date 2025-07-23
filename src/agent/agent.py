@@ -1,7 +1,8 @@
 # python
 from typing import Optional
 # project
-from src.tools.tools import open_app_tool, close_app_tool, turn_off_pc_tool, restart_pc_tool, make_a_web_search_tool
+from src.tools.tools import open_app_tool, close_app_tool, turn_off_pc_tool, restart_pc_tool
+from src.tools.web_work_tools import tavily_web_search_tool
 # 3rd party
 from langchain_ollama.chat_models import ChatOllama as OllamaLLM
 from langchain.agents import create_tool_calling_agent, AgentExecutor
@@ -26,7 +27,7 @@ def create_agent(tools: Optional[list[BaseTool]] = None) -> AgentExecutor:
         close_app_tool,
         turn_off_pc_tool,
         restart_pc_tool,
-        make_a_web_search_tool,
+        tavily_web_search_tool,
     ]
     llm = OllamaLLM(
         model="llama3.2"

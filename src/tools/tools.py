@@ -1,9 +1,8 @@
 # python
 import os
 # 3rd party
-from AppOpener import open as open_app, close
+from AppOpener import open as open_app, close as close_app
 from langchain.tools import tool
-import webbrowser
 
 
 @tool
@@ -65,35 +64,7 @@ def close_app_tool(app: str) -> str:
         str: A message indicating the result of the operation.
     """
     try:
-        close(app.lower())
+        close_app(app.lower())
         return f'{app} closed successfully.'
     except Exception as e:
         return f"Error closing {app}: {e}"
-
-
-@tool
-def make_a_web_search_tool(query: str) -> str:
-    """Tool for performing a web search.
-
-    Args:
-        query (str): The search query.
-    Returns:
-        str: A message indicating the result of the operation.
-    """
-    try:
-        webbrowser.open(f"https://www.google.com/search?q={query}")
-        return f"Searching for '{query}' on Google."
-    except Exception as e:
-        return f"Error performing web search: {e}"
-
-
-@tool
-def deep_web_search_tool(query: str) -> str:
-    """Tool for performing a deep web search.
-
-    Args:
-        query (str): The search query.
-    Returns:
-        str: A message indicating the result of the operation.
-    """
-    ...
