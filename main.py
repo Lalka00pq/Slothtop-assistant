@@ -8,9 +8,9 @@ def main() -> None:
     agent = create_agent()
 
     result = agent.invoke(
-        {"input": "Restart the computer in 5 seconds."})
+        {"input": "What can you say me about the langchain framework?"})
 
-    print(result)
+    print(result['output'] if 'output' in result else 'No result')
 
 
 if __name__ == "__main__":
