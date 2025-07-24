@@ -8,7 +8,6 @@ import flet as ft
 
 def main() -> None:
     """Main function to create the agent and invoke it with a sample input."""
-
     agent = create_agent()
 
     result = agent.invoke(
@@ -20,4 +19,4 @@ def main() -> None:
 if __name__ == "__main__":
     # record_and_transcribe()
     # main()
-    ft.app(target=app_page, view=ft.AppView.FLET_APP)
+    ...
