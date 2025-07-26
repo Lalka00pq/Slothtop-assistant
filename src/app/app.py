@@ -69,6 +69,13 @@ def app_page(page: ft.Page):
     page.bgcolor = ft.Colors.GREY_900
     page.padding = 20
     page.spacing = 20
+    page.window.width = 600
+    page.window.height = 600
+    page.window.min_width = 500
+    page.window.min_height = 500
+    page.window.left = 950
+    page.window.top = 220
+    page.on_resized = lambda _: page.update()
 
     chat_container = ft.Container(
         content=ft.Column(
@@ -97,7 +104,9 @@ def app_page(page: ft.Page):
         expand=True,
         multiline=True,
         min_lines=1,
-        max_lines=5
+        max_lines=5,
+        on_submit=lambda e: send_message(e),
+        shift_enter=True
     )
 
     send_button = ft.ElevatedButton(
@@ -136,21 +145,11 @@ def app_page(page: ft.Page):
 
             # Clear input and update
             input_field.value = ""
+            chat_container.content.scroll_to(offset=-1, duration=200)
             page.update()
 
-    def handle_enter(e):
-        """Handle Enter key press to send message.
+            # Прокрутка к последнему сообщению
 
-        Args:
-            e (event): The key event.
-        """
-        if key_event.key == "Enter":
-            send_message(e)
-
-    # Bind Enter key to send message
-    key_event = ft.KeyboardEvent(key="Enter", shift=False,
-                                 ctrl=False, meta=False, alt=False)
-    # page.on_keyboard_event = handle_enter
     # Main layout
     page.add(
         # Header
