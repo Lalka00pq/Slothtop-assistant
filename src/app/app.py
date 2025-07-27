@@ -1,5 +1,6 @@
 import flet as ft
 from datetime import datetime
+from src.agent.agent import SlothAgent
 
 
 class Message:
@@ -76,6 +77,9 @@ def app_page(page: ft.Page):
     page.window.left = 950
     page.window.top = 220
     page.on_resized = lambda _: page.update()
+    sloth_agent = SlothAgent(
+        llm="llama3.2",
+    )
 
     chat_container = ft.Container(
         content=ft.Column(
@@ -126,22 +130,21 @@ def app_page(page: ft.Page):
         """
         if input_field.value and input_field.value.strip():
             user_message = Message(
-                "You",
-                input_field.value.strip(),
+                name="You",
+                message=input_field.value.strip(),
                 is_user=True
             )
 
             chat_container.content.controls.append(
                 create_message_bubble(user_message))
-
-            # TODO: Add AI response
-            ai_response = Message(
-                "AI Assistant",
-                "Это заглушка ответа от нейросети",
+            ai_message = Message(
+                name="Slothtop Assistant",
+                message=sloth_agent.agent_executor.invoke(
+                    {"input": input_field.value.strip()})["output"],
                 is_user=False
             )
             chat_container.content.controls.append(
-                create_message_bubble(ai_response))
+                create_message_bubble(ai_message))
 
             # Clear input and update
             input_field.value = ""
@@ -194,7 +197,3 @@ def app_page(page: ft.Page):
             border=ft.border.all(1, ft.Colors.GREY_700)
         )
     )
-
-
-if __name__ == "__main__":
-    ft.app(target=app_page, view=ft.AppView.FLET_APP)
