@@ -122,6 +122,24 @@ def app_page(page: ft.Page):
         on_click=lambda e: send_message(e)
     )
 
+    model_switch_dropdown = ft.Dropdown(
+        options=[
+            ft.dropdown.Option("llama3.2", "Llama 3.2"),
+            ft.dropdown.Option("mistral-nemo", "Mistral Nemo"),
+        ],
+        width=150,
+        text_size=14,
+        label="Select Model",
+        value="llama3.2",
+        on_change=lambda e: model_switch(e),
+    )
+
+    def model_switch(e):
+        """Switch the model used by the SlothAgent."""
+        sloth_agent.change_llm(new_llm=str(e.control.value))
+        print(f"Model changed to: {e.control.value}")
+        page.update()
+
     def send_message(e):
         """Send a message to the chat.
 
@@ -137,21 +155,24 @@ def app_page(page: ft.Page):
 
             chat_container.content.controls.append(
                 create_message_bubble(user_message))
+            chat_container.content.scroll_to(offset=-1, duration=200)
+            page.update()
+
+            text = input_field.value.strip()
+            input_field.value = ""
+            page.update()
             ai_message = Message(
                 name="Slothtop Assistant",
-                message=sloth_agent.agent_executor.invoke(
-                    {"input": input_field.value.strip()})["output"],
+                message=sloth_agent.invoke_agent(
+                    text)["output"],
                 is_user=False
             )
             chat_container.content.controls.append(
                 create_message_bubble(ai_message))
 
-            # Clear input and update
             input_field.value = ""
             chat_container.content.scroll_to(offset=-1, duration=200)
             page.update()
-
-            # Прокрутка к последнему сообщению
 
     # Main layout
     page.add(
@@ -186,7 +207,7 @@ def app_page(page: ft.Page):
             content=ft.Row(
                 controls=[
                     input_field,
-                    send_button
+                    send_button,
                 ],
                 spacing=12,
                 alignment=ft.MainAxisAlignment.END
@@ -195,5 +216,16 @@ def app_page(page: ft.Page):
             border_radius=ft.border_radius.all(12),
             padding=ft.padding.all(16),
             border=ft.border.all(1, ft.Colors.GREY_700)
+        ),
+        ft.Container(
+            content=ft.Row(
+                controls=[
+                    model_switch_dropdown,
+                ],
+                alignment=ft.MainAxisAlignment.START
+            ),
+            bgcolor=ft.Colors.GREY_900,
+            padding=ft.padding.all(12),
+            border_radius=ft.border_radius.all(12)
         )
     )

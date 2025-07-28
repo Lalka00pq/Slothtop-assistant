@@ -46,31 +46,44 @@ class SlothAgent:
             return_intermediate_steps=True
         )
 
-        def invoke_agent(self, query: str) -> dict:
-            """Invoke the agent with the given input text.
-            Args:
-                query (str): The input text to process.
+    def invoke_agent(self, query: str) -> dict:
+        """Invoke the agent with the given input text.
+        Args:
+            query (str): The input text to process.
 
-            Returns:
-                dict: The agent's response.
-            """
-            return self.agent_executor.invoke({"input": query})
+        Returns:
+            dict: The agent's response.
+        """
+        return self.agent_executor.invoke({"input": query})
 
-        def change_llm(self, new_llm: str) -> None:
-            """Change the language model used by the agent.
+    def check_ollama_connection(self) -> bool:
+        if self.llm is not None:
+            try:
+                self.llm.predict("Hello")
+                return True
+            except Exception as e:
+                print(f"Error checking Ollama connection: {e}")
+                return False
+        return False
 
-            Args:
-                new_llm (str): The new language model to use.
-            """
+    def change_llm(self, new_llm: str) -> None:
+        """Change the language model used by the agent.
+
+        Args:
+            new_llm (str): The new language model to use.
+        """
+        try:
             self.llm = OllamaLLM(model=new_llm)
-            self.agent = create_tool_calling_agent(
-                llm=self.llm,
-                tools=self.tools,
-                prompt=self.prompt
-            )
-            self.agent_executor = AgentExecutor(
-                agent=self.agent,
-                tools=self.tools,
-                verbose=True,
-                return_intermediate_steps=True
-            )
+        except Exception as e:
+            print(f"Error changing LLM: {e} - using default LLM.")
+        self.agent = create_tool_calling_agent(
+            llm=self.llm,
+            tools=self.tools,
+            prompt=self.prompt
+        )
+        self.agent_executor = AgentExecutor(
+            agent=self.agent,
+            tools=self.tools,
+            verbose=True,
+            return_intermediate_steps=True
+        )
