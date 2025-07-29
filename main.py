@@ -1,6 +1,5 @@
 # project
 from src.app.app import app_page
-from src.agent.agent import SlothAgent
 # 3rd party
 import flet as ft
 

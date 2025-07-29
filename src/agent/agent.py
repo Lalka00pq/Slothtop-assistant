@@ -1,13 +1,14 @@
 # python
 from typing import Optional
+import requests
 # project
 from src.tools.tools import open_app_tool, close_app_tool, turn_off_pc_tool, restart_pc_tool
 from src.tools.web_work_tools import tavily_web_search_tool
 # 3rd party
-from langchain_ollama.chat_models import ChatOllama as OllamaLLM
-from langchain.agents import create_tool_calling_agent, AgentExecutor
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.tools import BaseTool
+from langchain_ollama.chat_models import ChatOllama as OllamaLLM  # type: ignore
+from langchain.agents import create_tool_calling_agent, AgentExecutor  # type: ignore
+from langchain_core.prompts import ChatPromptTemplate  # type: ignore
+from langchain_core.tools import BaseTool  # type: ignore
 
 
 class SlothAgent:
@@ -57,14 +58,20 @@ class SlothAgent:
         return self.agent_executor.invoke({"input": query})
 
     def check_ollama_connection(self) -> bool:
-        if self.llm is not None:
-            try:
-                self.llm.predict("Hello")
-                return True
-            except Exception as e:
-                print(f"Error checking Ollama connection: {e}")
-                return False
-        return False
+        """Check if Ollama server is running and accessible.
+
+        Returns:
+            bool: True if Ollama server is running and accessible, False otherwise.
+        """
+        try:
+            # Попытка подключиться к API Ollama
+            response = requests.get(
+                "http://localhost:11434", timeout=5)
+            return response.status_code == 200
+        except requests.exceptions.RequestException as e:
+            print(
+                f"Error connecting to Ollama server: {e} Please check if Ollama server is running.")
+            return False
 
     def change_llm(self, new_llm: str) -> None:
         """Change the language model used by the agent.
