@@ -1,5 +1,10 @@
-import flet as ft
+# python
 from datetime import datetime
+# project
+from src.agent.agent import SlothAgent
+from src.models.models import Models
+# 3rd party
+import flet as ft  # type: ignore
 
 
 class Message:
@@ -70,131 +75,198 @@ def app_page(page: ft.Page):
     page.padding = 20
     page.spacing = 20
     page.window.width = 600
-    page.window.height = 600
+    page.window.height = 800
     page.window.min_width = 500
     page.window.min_height = 500
     page.window.left = 950
-    page.window.top = 220
+    page.window.top = 0
     page.on_resized = lambda _: page.update()
+    # Get available models
+    models_handler = Models()
+    available_models = models_handler.get_available_models()
+    default_model = available_models[0] if available_models else "llama3.2"
 
-    chat_container = ft.Container(
-        content=ft.Column(
-            controls=[],
-            scroll=ft.ScrollMode.AUTO,
-            spacing=8,
-            expand=False,
-            width=float('inf'),
-        ),
-        bgcolor=ft.Colors.GREY_800,
-        border_radius=ft.border_radius.all(12),
-        padding=ft.padding.all(16),
-        expand=True,
-        border=ft.border.all(1, ft.Colors.GREY_700)
-
+    sloth_agent = SlothAgent(
+        llm=default_model,
     )
+    if sloth_agent.check_ollama_connection():
 
-    input_field = ft.TextField(
-        hint_text="How can I help you today?",
-        border_radius=ft.border_radius.all(25),
-        bgcolor=ft.Colors.GREY_800,
-        border_color=ft.Colors.GREY_600,
-        focused_border_color=ft.Colors.BLUE_400,
-        color=ft.Colors.WHITE,
-        hint_style=ft.TextStyle(color=ft.Colors.GREY_400),
-        expand=True,
-        multiline=True,
-        min_lines=1,
-        max_lines=5,
-        on_submit=lambda e: send_message(e),
-        shift_enter=True
-    )
-
-    send_button = ft.ElevatedButton(
-        text="Send",
-        icon=ft.Icons.SEND,
-        bgcolor=ft.Colors.BLUE_600,
-        color=ft.Colors.WHITE,
-        height=50,
-        on_click=lambda e: send_message(e)
-    )
-
-    def send_message(e):
-        """Send a message to the chat.
-
-        Args:
-            e (event): The event triggered by the send button.
-        """
-        if input_field.value and input_field.value.strip():
-            user_message = Message(
-                "You",
-                input_field.value.strip(),
-                is_user=True
-            )
-
-            chat_container.content.controls.append(
-                create_message_bubble(user_message))
-
-            # TODO: Add AI response
-            ai_response = Message(
-                "AI Assistant",
-                "Это заглушка ответа от нейросети",
-                is_user=False
-            )
-            chat_container.content.controls.append(
-                create_message_bubble(ai_response))
-
-            # Clear input and update
-            input_field.value = ""
-            chat_container.content.scroll_to(offset=-1, duration=200)
-            page.update()
-
-            # Прокрутка к последнему сообщению
-
-    # Main layout
-    page.add(
-        # Header
-        ft.Container(
-            content=ft.Row(
-                controls=[
-                    ft.Image(
-                        src=r"src\app\sloth_5980972.png",
-                        width=50,
-                        height=50,
-                        color=ft.Colors.BLUE_600,
-                        fit=ft.ImageFit.CONTAIN,
-                        error_content=ft.Text(
-                            "Image not found", color=ft.Colors.RED_400),
-                    ),
-                    ft.Text(
-                        "Slothtop Assistant",
-                        size=24,
-                        weight=ft.FontWeight.BOLD,
-                        color=ft.Colors.WHITE
-                    )
-                ],
-                alignment=ft.MainAxisAlignment.CENTER
-            ),
-            margin=ft.margin.only(bottom=20)
-        ),
-
-        chat_container,
-
-        ft.Container(
-            content=ft.Row(
-                controls=[
-                    input_field,
-                    send_button
-                ],
-                spacing=12,
-                alignment=ft.MainAxisAlignment.END
+        chat_container = ft.Container(
+            content=ft.Column(
+                controls=[],
+                scroll=ft.ScrollMode.AUTO,
+                spacing=8,
+                expand=False,
+                width=float('inf'),
             ),
             bgcolor=ft.Colors.GREY_800,
             border_radius=ft.border_radius.all(12),
             padding=ft.padding.all(16),
+            expand=True,
             border=ft.border.all(1, ft.Colors.GREY_700)
+
         )
-    )
 
+        input_field = ft.TextField(
+            hint_text="How can I help you today?",
+            border_radius=ft.border_radius.all(25),
+            bgcolor=ft.Colors.GREY_800,
+            border_color=ft.Colors.GREY_600,
+            focused_border_color=ft.Colors.BLUE_400,
+            color=ft.Colors.WHITE,
+            hint_style=ft.TextStyle(color=ft.Colors.GREY_400),
+            expand=True,
+            multiline=True,
+            min_lines=1,
+            max_lines=5,
+            on_submit=lambda e: send_message(e),
+            shift_enter=True
+        )
 
-if __name__ == "__main__":
-    ft.app(target=app_page, view=ft.AppView.FLET_APP)
+        send_button = ft.ElevatedButton(
+            text="Send",
+            icon=ft.Icons.SEND,
+            bgcolor=ft.Colors.BLUE_600,
+            color=ft.Colors.WHITE,
+            height=50,
+            on_click=lambda e: send_message(e)
+        )
+
+        # Get available models
+        models_handler = Models()
+        available_models = models_handler.get_available_models()
+
+        if not available_models:
+            model_switch_dropdown = ft.Text(
+                "No models available. Please check Ollama installation.",
+                color=ft.Colors.RED_400,
+                size=14
+            )
+        else:
+            model_switch_dropdown = ft.Dropdown(
+                options=[
+                    ft.dropdown.Option(model_name, model_name.capitalize())
+                    for model_name in available_models
+                ],
+                width=150,
+                text_size=14,
+                label="Select Model",
+                value=available_models[0] if available_models else None,
+                on_change=lambda e: model_switch(e),
+            )
+
+        def model_switch(e):
+            """Switch the model used by the SlothAgent."""
+            sloth_agent.change_llm(new_llm=str(e.control.value))
+            print(f"Model changed to: {e.control.value}")
+            page.update()
+
+        def send_message(e):
+            """Send a message to the chat.
+
+            Args:
+                e (event): The event triggered by the send button.
+            """
+            if input_field.value and input_field.value.strip():
+                user_message = Message(
+                    name="You",
+                    message=input_field.value.strip(),
+                    is_user=True
+                )
+
+                chat_container.content.controls.append(  # type: ignore
+                    create_message_bubble(user_message))
+                chat_container.content.scroll_to(  # type: ignore
+                    offset=-1, duration=200)
+                page.update()
+
+                text = input_field.value.strip()
+                input_field.value = ""
+                page.update()
+
+                ai_message = Message(
+                    name="Slothtop Assistant",
+                    message=sloth_agent.invoke_agent(
+                        text)["output"],
+                    is_user=False
+                )
+                chat_container.content.controls.append(  # type: ignore
+                    create_message_bubble(ai_message))
+
+                input_field.value = ""
+                chat_container.content.scroll_to(  # type: ignore
+                    offset=-1, duration=200)
+                page.update()
+
+        # Main layout
+        page.add(
+            # Header
+            ft.Container(
+                content=ft.Row(
+                    controls=[
+                        ft.Image(
+                            src=r"src\app\sloth_5980972.png",
+                            width=50,
+                            height=50,
+                            color=ft.Colors.BLUE_600,
+                            fit=ft.ImageFit.CONTAIN,
+                            error_content=ft.Text(
+                                "Image not found", color=ft.Colors.RED_400),
+                        ),
+                        ft.Text(
+                            "Slothtop Assistant",
+                            size=24,
+                            weight=ft.FontWeight.BOLD,
+                            color=ft.Colors.WHITE
+                        )
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER
+                ),
+                margin=ft.margin.only(bottom=20)
+            ),
+
+            chat_container,
+
+            ft.Container(
+                content=ft.Row(
+                    controls=[
+                        input_field,
+                        send_button,
+                    ],
+                    spacing=12,
+                    alignment=ft.MainAxisAlignment.END
+                ),
+                bgcolor=ft.Colors.GREY_800,
+                border_radius=ft.border_radius.all(12),
+                padding=ft.padding.all(16),
+                border=ft.border.all(1, ft.Colors.GREY_700)
+            ),
+            ft.Container(
+                content=ft.Row(
+                    controls=[
+                        model_switch_dropdown,
+                    ],
+                    alignment=ft.MainAxisAlignment.START
+                ),
+                bgcolor=ft.Colors.GREY_900,
+                padding=ft.padding.all(12),
+                border_radius=ft.border_radius.all(12)
+            )
+        )
+    else:
+        page.add(
+            ft.Container(
+                content=ft.Column(
+                    controls=[
+                        ft.Text(
+                            "Error: Ollama server is not running. Please start it and try again."),
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER
+                ),
+                bgcolor=ft.Colors.RED_900,
+                border_radius=ft.border_radius.all(12),
+                padding=ft.padding.all(16),
+                border=ft.border.all(1, ft.Colors.RED_700)
+            )
+        )
+        page.update()
