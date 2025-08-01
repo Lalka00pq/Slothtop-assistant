@@ -9,6 +9,8 @@ from langchain_ollama.chat_models import ChatOllama as OllamaLLM  # type: ignore
 from langchain.agents import create_tool_calling_agent, AgentExecutor  # type: ignore
 from langchain_core.prompts import ChatPromptTemplate  # type: ignore
 from langchain_core.tools import BaseTool  # type: ignore
+from langchain.memory import ConversationBufferMemory
+from langchain.prompts import MessagesPlaceholder
 
 
 class SlothAgent:
@@ -31,6 +33,7 @@ class SlothAgent:
         ]
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", "You are a helpful assistant. Use the tools only if it's necessary (for example, if the user asks to open an application, you should use tools, but if the user asks a general question, you can answer without using tools)."),
+            MessagesPlaceholder(variable_name="chat_history"),
             ("human", "{input}"),
             ("placeholder", "{agent_scratchpad}"),
         ])
@@ -38,13 +41,14 @@ class SlothAgent:
         self.agent = create_tool_calling_agent(
             llm=self.llm,
             tools=self.tools,
-            prompt=self.prompt
+            prompt=self.prompt,
         )
-        self.agent_executor = AgentExecutor(
+        self.agent_executor = AgentExecutor.from_agent_and_tools(
             agent=self.agent,
             tools=self.tools,
             verbose=True,
-            return_intermediate_steps=True
+            memory=ConversationBufferMemory(
+                memory_key="chat_history", return_messages=True)
         )
 
     def invoke_agent(self, query: str) -> dict:
@@ -55,7 +59,10 @@ class SlothAgent:
         Returns:
             dict: The agent's response.
         """
-        return self.agent_executor.invoke({"input": query})
+
+        response = self.agent_executor.invoke({
+            "input": query})
+        return response
 
     def check_ollama_connection(self) -> bool:
         """Check if Ollama server is running and accessible.
@@ -64,7 +71,7 @@ class SlothAgent:
             bool: True if Ollama server is running and accessible, False otherwise.
         """
         try:
-            # Попытка подключиться к API Ollama
+            # Try to connect to the Ollama API
             response = requests.get(
                 "http://localhost:11434", timeout=5)
             return response.status_code == 200
@@ -92,5 +99,18 @@ class SlothAgent:
             agent=self.agent,
             tools=self.tools,
             verbose=True,
-            return_intermediate_steps=True
+            return_intermediate_steps=True,
         )
+
+    def change_prompt(self, new_prompt: str) -> None:
+        """Change the prompt used by the agent.
+
+        Args:
+            new_prompt (str): The new prompt to use.
+        """
+        self.prompt = ChatPromptTemplate.from_messages([
+            ("system", new_prompt),
+            MessagesPlaceholder(variable_name="chat_history"),
+            ("human", "{input}"),
+            ("placeholder", "{agent_scratchpad}"),
+        ])
