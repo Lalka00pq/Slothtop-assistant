@@ -157,9 +157,10 @@ def app_page(page: ft.Page):
                     is_user=True
                 )
 
-                chat_container.content.controls.append(
+                chat_container.content.controls.append(  # type: ignore
                     create_message_bubble(user_message))
-                chat_container.content.scroll_to(offset=-1, duration=200)
+                chat_container.content.scroll_to(  # type: ignore
+                    offset=-1, duration=200)
                 page.update()
 
                 text = input_field.value.strip()
@@ -172,11 +173,12 @@ def app_page(page: ft.Page):
                         text)["output"],
                     is_user=False
                 )
-                chat_container.content.controls.append(
+                chat_container.content.controls.append(  # type: ignore
                     create_message_bubble(ai_message))
 
                 input_field.value = ""
-                chat_container.content.scroll_to(offset=-1, duration=200)
+                chat_container.content.scroll_to(  # type: ignore
+                    offset=-1, duration=200)
                 page.update()
 
         # Main layout
