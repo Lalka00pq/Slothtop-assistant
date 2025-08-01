@@ -43,12 +43,16 @@ class SlothAgent:
             tools=self.tools,
             prompt=self.prompt,
         )
+        self.memory = ConversationBufferMemory(
+            memory_key="chat_history",
+            return_messages=True,
+            input_key="input"
+        )
         self.agent_executor = AgentExecutor.from_agent_and_tools(
             agent=self.agent,
             tools=self.tools,
             verbose=True,
-            memory=ConversationBufferMemory(
-                memory_key="chat_history", return_messages=True)
+            memory=self.memory
         )
 
     def invoke_agent(self, query: str) -> dict:
@@ -59,9 +63,7 @@ class SlothAgent:
         Returns:
             dict: The agent's response.
         """
-
-        response = self.agent_executor.invoke({
-            "input": query})
+        response = self.agent_executor.invoke({"input": query})
         return response
 
     def check_ollama_connection(self) -> bool:
@@ -95,11 +97,11 @@ class SlothAgent:
             tools=self.tools,
             prompt=self.prompt
         )
-        self.agent_executor = AgentExecutor(
+        self.agent_executor = AgentExecutor.from_agent_and_tools(
             agent=self.agent,
             tools=self.tools,
             verbose=True,
-            return_intermediate_steps=True,
+            memory=self.memory
         )
 
     def change_prompt(self, new_prompt: str) -> None:

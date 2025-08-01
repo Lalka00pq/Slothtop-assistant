@@ -2,6 +2,7 @@
 from datetime import datetime
 # project
 from src.agent.agent import SlothAgent
+from src.models.models import Models
 # 3rd party
 import flet as ft  # type: ignore
 
@@ -80,8 +81,13 @@ def app_page(page: ft.Page):
     page.window.left = 950
     page.window.top = 0
     page.on_resized = lambda _: page.update()
+    # Get available models
+    models_handler = Models()
+    available_models = models_handler.get_available_models()
+    default_model = available_models[0] if available_models else "llama3.2"
+
     sloth_agent = SlothAgent(
-        llm="llama3.2",
+        llm=default_model,
     )
     if sloth_agent.check_ollama_connection():
 
@@ -126,17 +132,28 @@ def app_page(page: ft.Page):
             on_click=lambda e: send_message(e)
         )
 
-        model_switch_dropdown = ft.Dropdown(
-            options=[
-                ft.dropdown.Option("llama3.2", "Llama 3.2"),
-                ft.dropdown.Option("mistral-nemo", "Mistral Nemo"),
-            ],
-            width=150,
-            text_size=14,
-            label="Select Model",
-            value="llama3.2",
-            on_change=lambda e: model_switch(e),
-        )
+        # Get available models
+        models_handler = Models()
+        available_models = models_handler.get_available_models()
+
+        if not available_models:
+            model_switch_dropdown = ft.Text(
+                "No models available. Please check Ollama installation.",
+                color=ft.Colors.RED_400,
+                size=14
+            )
+        else:
+            model_switch_dropdown = ft.Dropdown(
+                options=[
+                    ft.dropdown.Option(model_name, model_name.capitalize())
+                    for model_name in available_models
+                ],
+                width=150,
+                text_size=14,
+                label="Select Model",
+                value=available_models[0] if available_models else None,
+                on_change=lambda e: model_switch(e),
+            )
 
         def model_switch(e):
             """Switch the model used by the SlothAgent."""
