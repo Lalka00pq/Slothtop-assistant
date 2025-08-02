@@ -116,16 +116,14 @@ def create_settings_view(page: ft.Page) -> ft.View:
                 ft.Container(
                     content=ft.Column(
                         controls=[
-                            ft.Text("Default Model", size=16,
+                            ft.Text("Models settings", size=16,
                                     color=ft.Colors.WHITE),
-                            ft.Dropdown(
-                                width=200,
-                                label="Select default model",
-                                hint_text="Choose a model",
-                                options=[
-                                    ft.dropdown.Option("llama2"),
-                                    ft.dropdown.Option("mistral"),
-                                ],
+                            ft.TextField(
+                                label="New prompt",
+                                hint_text="Enter new prompt",
+                                width=400,
+                                multiline=True,
+                                shift_enter=True
                             ),
                         ],
                     ),

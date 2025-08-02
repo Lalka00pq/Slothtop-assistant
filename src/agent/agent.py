@@ -25,11 +25,11 @@ class SlothAgent:
             None: None
         """
         self.tools = tools_list or [
-            # open_app_tool,
-            # close_app_tool,
-            # turn_off_pc_tool,
-            # restart_pc_tool,
-            # tavily_web_search_tool
+            open_app_tool,
+            close_app_tool,
+            turn_off_pc_tool,
+            restart_pc_tool,
+            tavily_web_search_tool
         ]
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", "You are a helpful assistant. Use the tools only if it's necessary (for example, if the user asks to open an application, you should use tools, but if the user asks a general question, you can answer without using tools)."),
