@@ -16,17 +16,16 @@ class Models:
             response = requests.get(f"{Models.OLLAMA_API_URL}/api/tags")
             if response.status_code == 200:
                 models_data = response.json().get("models", [])
-                # Extract model names from the response
                 return [model["name"] for model in models_data]
             return []
         except requests.RequestException:
             return []
 
-    def __init__(self, model: str = "llama3.2"):
+    def __init__(self, model: str):
         """Initialize Models class.
 
         Args:
-            model (str, optional): Default model name. Defaults to "llama3.2".
+            model (str): Default model name. Defaults to "llama3.2".
         """
         self.model = model
         self.available_models = self.get_available_models()
