@@ -5,7 +5,7 @@ This is the project of AI assistant Slothtop. This assistant can work with your 
 In the future new tools will be added.
 If you want, you can take and use this project as a template for your own AI assistants.
 
-## How to run this project localy
+## How to run this project locally
 
 Clone the project
 

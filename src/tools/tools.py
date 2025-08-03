@@ -48,7 +48,7 @@ def open_app_tool(app: str) -> str:
     """
 
     try:
-        open_app(app.lower())
+        open_app(app.lower(), match_closest=True, throw_error=True)
         return f'{app} opened successfully.'
     except Exception as e:
         return f"Error opening {app}: {e}"
@@ -64,7 +64,7 @@ def close_app_tool(app: str) -> str:
         str: A message indicating the result of the operation.
     """
     try:
-        close_app(app.lower())
+        close_app(app.lower(), match_closest=True, throw_error=True)
         return f'{app} closed successfully.'
     except Exception as e:
         return f"Error closing {app}: {e}"

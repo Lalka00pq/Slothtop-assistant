@@ -14,22 +14,22 @@ from langchain.prompts import MessagesPlaceholder
 
 
 class SlothAgent:
-    def __init__(self, llm: str = "llama3.2", tools_list: Optional[list[BaseTool]] = None):
+    def __init__(self, llm: str, tools_list: Optional[list[BaseTool]] = None):
         """Initialize the SlothAgent with a language model and a list of tools.
 
         Args:
-            llm (str, optional): The language model to use for the agent.
+            llm (str): The language model to use for the agent.
             tools_list (Optional[list[BaseTool]], optional): A list of tools the agent can use. Defaults to None.
 
         Returns:
             None: None
         """
         self.tools = tools_list or [
-            # open_app_tool,
-            # close_app_tool,
-            # turn_off_pc_tool,
-            # restart_pc_tool,
-            # tavily_web_search_tool
+            open_app_tool,
+            close_app_tool,
+            turn_off_pc_tool,
+            restart_pc_tool,
+            tavily_web_search_tool
         ]
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", "You are a helpful assistant. Use the tools only if it's necessary (for example, if the user asks to open an application, you should use tools, but if the user asks a general question, you can answer without using tools)."),
@@ -75,7 +75,7 @@ class SlothAgent:
         try:
             # Try to connect to the Ollama API
             response = requests.get(
-                "http://localhost:11434", timeout=5)
+                "http://localhost:11434")
             return response.status_code == 200
         except requests.exceptions.RequestException as e:
             print(
