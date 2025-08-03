@@ -16,6 +16,19 @@ class Message:
         self.timestamp = datetime.now().strftime("%H:%M")
 
 
+class ChatState:
+    """Global state for the chat application."""
+
+    def __init__(self):
+        self.messages: list[Message] = []
+        self.current_model: str = ""
+        self.agent: Optional[SlothAgent] = None
+        self.chat_container: Optional[ft.Column] = None
+
+
+chat_state = ChatState()
+
+
 def create_message_bubble(message: Message) -> ft.Container:
     """Create a styled message bubble for the chat.
 
@@ -368,20 +381,6 @@ def on_route_change(e):
         page.views.append(create_main_view(page))
 
     page.update()
-
-
-class ChatState:
-    """Global state for the chat application."""
-
-    def __init__(self):
-        self.messages: list[Message] = []
-        self.current_model: str = ""
-        self.agent: Optional[SlothAgent] = None
-        self.chat_container: Optional[ft.Column] = None
-
-
-# Create global state
-chat_state = ChatState()
 
 
 def initialize_chat_state(page: ft.Page):
