@@ -76,5 +76,7 @@ or
   uv run main.py
 ```
 ## 📸Screenshots
-<center><img src='screenshots/Screen1.png'></center>
-<center><img src='screenshots/Screenshot2.png'></center>
+<p align="center">>
+   <center><img src='screenshots/Screen1.png'></center>
+   <center><img src='screenshots/Screenshot2.png'></center>
+</p>
