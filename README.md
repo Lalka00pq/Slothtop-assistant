@@ -1,18 +1,19 @@
 # Slothtop Assistant
 
-![[screenshots/86f52602-691d-4af2-b451-37f4e1d93510.jpg|350]]
+<center><img src='screenshots/86f52602-691d-4af2-b451-37f4e1d93510.jpg' width=420 height=350></center>
 
-> [!warning] 
->  **Project isn't ready yet**, this is only the demo version.
+>[!warning] 
+>**Project isn't ready yet**, this is only the demo version.
 
-> [!attention] 
-> This project is **only for Windows** OS :(  
+>[!important] 
+>This project is **only for Windows** OS :(  
+
 ## 🦥About project
 
 This is the project of AI assistant Slothtop. You can chat with him and he will responce to you. Slothtop uses Ollama models and can use tools to do some actions. 
 
-> [!info] 
-> If you want, you can take and use this project as a template for your own AI assistants. 
+>[!note] 
+>If you want, you can take and use this project as a template for your own AI assistants. 
 ### 🛠Tools:
 
 - Web-search (Tavily API)
@@ -21,7 +22,7 @@ This is the project of AI assistant Slothtop. You can chat with him and he will 
 - Show you the CPU and GPU monitoring pages
 - Open and close apps on your PC
 ****
->[!info] 
+>[!note] 
 > In the future new tools will be added. 
 
 ## 🔎Tech Stack
@@ -74,5 +75,5 @@ or
   uv run main.py
 ```
 ## 📸Screenshots
-![[screenshots/Screen1.png]]
-![[screenshots/Screenshot2.png]]
+<center><img src='screenshots/Screen1.png'></center>
+<center><img src='screenshots/Screenshot2.png'></center>
