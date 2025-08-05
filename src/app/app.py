@@ -92,7 +92,7 @@ def create_settings_view(page: ft.Page) -> ft.View:
                 on_click=lambda _: page.go("/")
             ),
             ft.Text(
-                "Settings",
+                "Settings (In development)",
                 size=24,
                 weight=ft.FontWeight.BOLD,
                 color=ft.Colors.WHITE
@@ -172,8 +172,7 @@ def create_main_view(page: ft.Page) -> ft.View:
         ft.View: The main chat view
     """
     # Get available models
-    models_handler = Models(model="llama3.2")
-    available_models = models_handler.get_available_models()
+    available_models = Models.get_available_models()
 
     # Create chat container using global state
     chat_container = ft.Container(
@@ -213,7 +212,7 @@ def create_main_view(page: ft.Page) -> ft.View:
     # Create model dropdown
     if not available_models:
         model_switch_dropdown = ft.Text(
-            "No models available. Please check Ollama installation.",
+            "No models available. Please check Ollama models installation and ensure that Ollama is running.",
             color=ft.Colors.RED_400,
             size=14
         )

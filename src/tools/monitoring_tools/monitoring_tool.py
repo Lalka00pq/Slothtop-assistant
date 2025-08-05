@@ -1,273 +1,142 @@
 # python
 import os
 import signal
-import threading
-import time
-from collections import deque
 import multiprocessing
+from typing import List
 # 3rd party
-import flet as ft
+import flet as ft  # type: ignore
 import psutil
-from langchain.tools import tool
+from langchain.tools import tool  # type: ignore
+from src.tools.monitoring_tools.monitoring_class import Monitor
+import GPUtil  # type: ignore
 
 
-class CPUMonitor:
+class CPUMonitor(Monitor):
     """
     Class for monitoring CPU and memory usage.
-
-    Attributes:
-        cpu_history: deque of CPU usage history
-        memory_history: deque of memory usage history
-        is_monitoring: flag for monitoring status
     """
 
     def __init__(self):
         """
         Initializes the CPUMonitor class.
         """
-        self.cpu_history = deque([0.0]*30, maxlen=30)
-        self.memory_history = deque([0.0]*30, maxlen=30)
-        self.is_monitoring = False
-        self.monitoring_thread = None
-        self.page = None
-        self.cpu_chart = None
-        self.memory_chart = None
-
-    def start_monitoring(self):
-        """Starts monitoring process"""
-        if not self.is_monitoring:
-            self.is_monitoring = True
-            self.monitoring_thread = threading.Thread(
-                target=self._monitor_loop)
-            self.monitoring_thread.daemon = True
-            self.monitoring_thread.start()
-
-    def stop_monitoring(self):
-        """Stops monitoring process"""
-        self.is_monitoring = False
-        if self.monitoring_thread:
-            self.monitoring_thread.join()
-
-        if self.page:
-            self.page = None
-            self.cpu_chart = None
-            self.memory_chart = None
-
-    def _monitor_loop(self):
-        """Main monitoring loop"""
-        while self.is_monitoring:
-            self.cpu_history.append(psutil.cpu_percent())
-            self.memory_history.append(psutil.virtual_memory().percent)
-
-            if self.page and self.cpu_chart and self.memory_chart:
-                try:
-                    self.cpu_chart.data_series[0].data_points = [
-                        ft.LineChartDataPoint(x, y)
-                        for x, y in enumerate(self.cpu_history)
-                    ]
-                    self.memory_chart.data_series[0].data_points = [
-                        ft.LineChartDataPoint(x, y)
-                        for x, y in enumerate(self.memory_history)
-                    ]
-                    self.page.update()
-                except Exception:
-                    pass
-
-            time.sleep(1)
-
-    def create_dashboard(self, page: ft.Page):
-        """Creates dashboard with charts"""
-        self.page = page
-        page.title = "System Monitor"
-        page.theme_mode = ft.ThemeMode.DARK
-        page.padding = 20
-
-        self.cpu_chart = ft.LineChart(
-            data_series=[
-                ft.LineChartData(
-                    data_points=[
-                        ft.LineChartDataPoint(x, y)
-                        for x, y in enumerate(self.cpu_history)
-                    ],
-                    stroke_width=2,
-                    color=ft.Colors.BLUE,
-                    curved=True,
-                ),
-            ],
-            border=ft.Border(
-                top=ft.BorderSide(width=1, color=ft.Colors.GREY_400),
-                bottom=ft.BorderSide(width=1, color=ft.Colors.GREY_400),
-                left=ft.BorderSide(width=1, color=ft.Colors.GREY_400),
-                right=ft.BorderSide(width=1, color=ft.Colors.GREY_400),
-            ),
-            horizontal_grid_lines=ft.ChartGridLines(
-                interval=10,
-                color=ft.Colors.GREY_400,
-                width=1,
-            ),
-            vertical_grid_lines=ft.ChartGridLines(
-                interval=5,
-                color=ft.Colors.GREY_400,
-                width=1,
-            ),
-            left_axis=ft.ChartAxis(
-                labels=[
-                    ft.ChartAxisLabel(
-                        value=x,
-                        label=ft.Text(f"{x}%"),
-                    )
-                    for x in range(0, 101, 20)
-                ],
-                labels_size=40,
-            ),
-            bottom_axis=ft.ChartAxis(
-                labels=[
-                    ft.ChartAxisLabel(
-                        value=x,
-                        label=ft.Text(f"{x}s"),
-                    )
-                    for x in range(0, 31, 5)
-                ],
-                labels_size=40,
-            ),
-            tooltip_bgcolor=ft.Colors.with_opacity(0.8, ft.Colors.BLUE_GREY),
-            min_y=0,
-            max_y=100,
-            min_x=0,
-            max_x=30,
-            expand=True,
+        super().__init__(
+            chart_names=["CPU Usage", "Memory Usage"],
+            colors=[ft.Colors.BLUE, ft.Colors.GREEN]
         )
 
-        # Memory график
-        self.memory_chart = ft.LineChart(
-            data_series=[
-                ft.LineChartData(
-                    data_points=[
-                        ft.LineChartDataPoint(x, y)
-                        for x, y in enumerate(self.memory_history)
-                    ],
-                    stroke_width=2,
-                    color=ft.Colors.GREEN,
-                    curved=True,
-                ),
-            ],
-            border=ft.Border(
-                top=ft.BorderSide(width=1, color=ft.Colors.GREY_400),
-                bottom=ft.BorderSide(width=1, color=ft.Colors.GREY_400),
-                left=ft.BorderSide(width=1, color=ft.Colors.GREY_400),
-                right=ft.BorderSide(width=1, color=ft.Colors.GREY_400),
-            ),
-            horizontal_grid_lines=ft.ChartGridLines(
-                interval=10,
-                color=ft.Colors.GREY_400,
-                width=1,
-            ),
-            vertical_grid_lines=ft.ChartGridLines(
-                interval=5,
-                color=ft.Colors.GREY_400,
-                width=1,
-            ),
-            left_axis=ft.ChartAxis(
-                labels=[
-                    ft.ChartAxisLabel(
-                        value=x,
-                        label=ft.Text(f"{x}%"),
-                    )
-                    for x in range(0, 101, 20)
-                ],
-                labels_size=40,
-            ),
-            bottom_axis=ft.ChartAxis(
-                labels=[
-                    ft.ChartAxisLabel(
-                        value=x,
-                        label=ft.Text(f"{x}s"),
-                    )
-                    for x in range(0, 31, 5)
-                ],
-                labels_size=40,
-            ),
-            tooltip_bgcolor=ft.Colors.with_opacity(0.8, ft.Colors.BLUE_GREY),
-            min_y=0,
-            max_y=100,
-            min_x=0,
-            max_x=30,
-            expand=True,
+    def _get_monitor_values(self) -> List[float]:
+        """
+        Gets the current values of CPU and memory.
+
+        Returns:
+            List[float]: List of values [cpu_percent, memory_percent]
+        """
+        return [
+            psutil.cpu_percent(),
+            psutil.virtual_memory().percent
+        ]
+
+
+class GPUMonitor(Monitor):
+    def __init__(self):
+        super().__init__(
+            chart_names=["GPU Usage", "GPU Temperature"],
+            colors=[ft.Colors.GREEN, ft.Colors.RED]
         )
 
-        page.add(
-            ft.Text("CPU Usage", size=20, weight=ft.FontWeight.BOLD),
-            ft.Container(
-                content=self.cpu_chart,
-                border=ft.border.all(1, ft.Colors.GREY_400),
-                border_radius=10,
-                padding=10,
-                margin=ft.margin.only(bottom=20),
-                height=300,
-            ),
-            ft.Text("Memory Usage", size=20, weight=ft.FontWeight.BOLD),
-            ft.Container(
-                content=self.memory_chart,
-                border=ft.border.all(1, ft.Colors.GREY_400),
-                border_radius=10,
-                padding=10,
-                height=300,
-            ),
-        )
+    def _get_monitor_values(self) -> List[float]:
+        """
+        Gets the current values of GPU.
+
+        Returns:
+            List[float]: List of values [gpu_percent, gpu_temperature]
+        """
+        try:
+            gpu_usage = GPUtil.getGPUs()
+            return [
+                gpu_usage[0].load * 100,
+                gpu_usage[0].temperature,
+            ]
+        except Exception as e:
+            raise Exception(
+                f"Error getting GPU usage: {e}, do you have a GPU?")
 
 
 cpu_monitor = CPUMonitor()
+gpu_monitor = GPUMonitor()
+
+# TODO Change methods for monitoring cpu and gpu (combine into one)
 
 
-def run_flet_dashboard(page: ft.Page):
+def run_flet_dashboard_cpu(page: ft.Page):
     """Function to run Flet dashboard."""
     def on_window_close(e):
         cpu_monitor.stop_monitoring()
-        page.window_destroy()
 
     page.on_close = on_window_close
     cpu_monitor.create_dashboard(page)
     cpu_monitor.start_monitoring()
 
 
-def run_flet_app_process():
+def run_flet_dashboard_gpu(page: ft.Page):
+
+    def on_window_close(e):
+        gpu_monitor.stop_monitoring()
+
+    page.on_close = on_window_close
+    gpu_monitor.create_dashboard(page)
+    gpu_monitor.start_monitoring()
+
+
+def run_flet_app_process_cpu():
     """Function to run Flet application in a separate process."""
     try:
-        ft.app(target=run_flet_dashboard, view=ft.AppView.FLET_APP)
+        ft.app(target=run_flet_dashboard_cpu, view=ft.AppView.FLET_APP)
     finally:
         cpu_monitor.stop_monitoring()
 
 
-monitoring_process = None
+def run_flet_app_process_gpu():
+
+    try:
+        ft.app(target=run_flet_dashboard_gpu, view=ft.AppView.FLET_APP)
+    finally:
+        gpu_monitor.stop_monitoring()
+
+
+monitoring_process_cpu = None
+monitoring_process_gpu = None
 
 
 @tool
-def start_monitoring_tool() -> str:
+def start_monitoring_cpu_tool() -> str:
     """Tool to start system resource monitoring.
 
     Returns:
         str: Message indicating the status of the operation
     """
-    global monitoring_process
+    global monitoring_process_cpu
 
-    if monitoring_process and monitoring_process.is_alive():
+    if monitoring_process_cpu and monitoring_process_cpu.is_alive():
         return "Monitoring is already running."
 
-    monitoring_process = multiprocessing.Process(target=run_flet_app_process)
-    monitoring_process.daemon = True
-    monitoring_process.start()
+    monitoring_process_cpu = multiprocessing.Process(
+        target=run_flet_app_process_cpu)
+    monitoring_process_cpu.daemon = True
+    monitoring_process_cpu.start()
 
     return "System monitoring started. Charts are updated in real time in a separate window."
 
 
 @tool
-def stop_monitoring_tool() -> str:
+def stop_monitoring_cpu_tool() -> str:
     """Tool to stop system resource monitoring.
 
     Returns:
         str: Message indicating the status of the operation
     """
-    global monitoring_process
+    global monitoring_process_cpu
     try:
         cpu_monitor.stop_monitoring()
 
@@ -277,22 +146,72 @@ def stop_monitoring_tool() -> str:
                 process.terminate()
                 process.join(timeout=1)
 
-        if monitoring_process:
-            kill_process(monitoring_process)
-            monitoring_process = None
+        if monitoring_process_cpu:
+            kill_process(monitoring_process_cpu)
+            monitoring_process_cpu = None
 
         for process in multiprocessing.active_children():
             kill_process(process)
 
-        cpu_monitor.page = None
-        cpu_monitor.cpu_chart = None
-        cpu_monitor.memory_chart = None
+        return "System monitoring stopped and window closed."
+    except Exception as e:
+        try:
+            if monitoring_process_cpu and monitoring_process_cpu.pid:
+                os.kill(monitoring_process_cpu.pid, signal.SIGTERM)
+        except Exception:
+            pass
+        return f"Error while stopping monitoring: {str(e)}"
+
+
+@tool
+def start_monitoring_gpu_tool() -> str:
+    """Tool to start GPU monitoring.
+
+    Returns:
+        str: Message indicating the status of the operation
+    """
+    global monitoring_process_gpu
+
+    if monitoring_process_gpu and monitoring_process_gpu.is_alive():
+        return "Monitoring is already running."
+
+    monitoring_process_gpu = multiprocessing.Process(
+        target=run_flet_app_process_gpu)
+    monitoring_process_gpu.daemon = True
+    monitoring_process_gpu.start()
+
+    return "GPU monitoring started. Charts are updated in real time in a separate window."
+
+
+@tool
+def stop_monitoring_gpu_tool() -> str:
+    """Tool to stop GPU monitoring.
+
+    Returns:
+        str: Message indicating the status of the operation
+    """
+    global monitoring_process_gpu
+    try:
+        gpu_monitor.stop_monitoring()
+
+        def kill_process(process):
+            """Helper function to kill a process"""
+            if process and process.is_alive():
+                process.terminate()
+                process.join(timeout=1)
+
+        if monitoring_process_gpu:
+            kill_process(monitoring_process_gpu)
+            monitoring_process_gpu = None
+
+        for process in multiprocessing.active_children():
+            kill_process(process)
 
         return "System monitoring stopped and window closed."
     except Exception as e:
         try:
-            if monitoring_process and monitoring_process.pid:
-                os.kill(monitoring_process.pid, signal.SIGTERM)
+            if monitoring_process_gpu and monitoring_process_gpu.pid:
+                os.kill(monitoring_process_gpu.pid, signal.SIGTERM)
         except Exception:
             pass
         return f"Error while stopping monitoring: {str(e)}"

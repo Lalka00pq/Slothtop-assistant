@@ -10,6 +10,7 @@ dependencies = [
     "duckduckgo-search>=8.0.4",
     "faster-whisper>=1.1.1",
     "flet[all]>=0.28.3",
+    "gputil>=1.4.0",
     "langchain>=0.3.26",
     "langchain-community>=0.3.26",
     "langchain-ollama>=0.3.3",
