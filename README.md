@@ -24,7 +24,7 @@ This is the project of AI assistant Slothtop. You can chat with him and he will 
 - Open and close apps on your PC
 ****
 >[!note] 
-> In the future new tools will be added. 
+>New tools will be added in the future 
 
 ## 🔎Tech Stack
 **Python 3.12** 
@@ -38,6 +38,7 @@ This is the project of AI assistant Slothtop. You can chat with him and he will 
 	or 
 - **uv** >= 0.6.14
 - Supported OS: Windows
+- Install [Ollama](https://ollama.com/)
 
 ### Installation 
 1) Clone the repository
