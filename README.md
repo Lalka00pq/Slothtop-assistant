@@ -11,7 +11,7 @@
 
 ## 🦥About project
 
-This is the project of AI assistant Slothtop. You can chat with him and he will responce to you. Slothtop uses Ollama models and can use tools to do some actions. 
+This is the project of AI assistant Slothtop. You can chat with him and he will response to you. Slothtop uses Ollama models and can use tools to do some actions. 
 
 >[!note] 
 >If you want, you can take and use this project as a template for your own AI assistants. 
