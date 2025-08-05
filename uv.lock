@@ -17,10 +17,12 @@ dependencies = [
     { name = "duckduckgo-search" },
     { name = "faster-whisper" },
     { name = "flet", extra = ["all"] },
+    { name = "gputil" },
     { name = "langchain" },
     { name = "langchain-community" },
     { name = "langchain-ollama" },
     { name = "langchain-tavily" },
+    { name = "psutil" },
     { name = "pydantic" },
     { name = "scipy" },
     { name = "sounddevice" },
@@ -34,10 +36,12 @@ requires-dist = [
     { name = "duckduckgo-search", specifier = ">=8.0.4" },
     { name = "faster-whisper", specifier = ">=1.1.1" },
     { name = "flet", extras = ["all"], specifier = ">=0.28.3" },
+    { name = "gputil", specifier = ">=1.4.0" },
     { name = "langchain", specifier = ">=0.3.26" },
     { name = "langchain-community", specifier = ">=0.3.26" },
     { name = "langchain-ollama", specifier = ">=0.3.3" },
     { name = "langchain-tavily", specifier = ">=0.2.10" },
+    { name = "psutil", specifier = ">=7.0.0" },
     { name = "pydantic", specifier = ">=2.11.7" },
     { name = "scipy", specifier = ">=1.15.3" },
     { name = "sounddevice", specifier = ">=0.5.2" },
@@ -608,6 +612,12 @@ sdist = { url = "https://files.pythonhosted.org/packages/00/f7/27f15d41f0ed38e8f
 wheels = [
     { url = "https://files.pythonhosted.org/packages/bb/61/78c7b3851add1481b048b5fdc29067397a1784e2910592bc81bb3f608635/fsspec-2025.5.1-py3-none-any.whl", hash = "sha256:24d3a2e663d5fc735ab256263c4075f374a174c3410c0b25e5bd1970bceaa462", size = 199052 },
 ]
+
+[[package]]
+name = "gputil"
+version = "1.4.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/ed/0e/5c61eedde9f6c87713e89d794f01e378cfd9565847d4576fa627d758c554/GPUtil-1.4.0.tar.gz", hash = "sha256:099e52c65e512cdfa8c8763fca67f5a5c2afb63469602d5dcb4d296b3661efb9", size = 5545 }
 
 [[package]]
 name = "greenlet"

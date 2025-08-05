@@ -1,6 +1,8 @@
 import requests
 from typing import List
 
+# TODO Change with ollama library
+
 
 class Models:
     OLLAMA_API_URL = "http://localhost:11434"
@@ -18,8 +20,9 @@ class Models:
                 models_data = response.json().get("models", [])
                 return [model["name"] for model in models_data]
             return []
-        except requests.RequestException:
-            return []
+        except requests.RequestException as e:
+            raise Exception(
+                f"Error getting available models from Ollama API: {e}")
 
     def __init__(self, model: str):
         """Initialize Models class.

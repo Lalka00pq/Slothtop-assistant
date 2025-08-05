@@ -16,6 +16,19 @@ class Message:
         self.timestamp = datetime.now().strftime("%H:%M")
 
 
+class ChatState:
+    """Global state for the chat application."""
+
+    def __init__(self):
+        self.messages: list[Message] = []
+        self.current_model: str = ""
+        self.agent: Optional[SlothAgent] = None
+        self.chat_container: Optional[ft.Column] = None
+
+
+chat_state = ChatState()
+
+
 def create_message_bubble(message: Message) -> ft.Container:
     """Create a styled message bubble for the chat.
 
@@ -79,7 +92,7 @@ def create_settings_view(page: ft.Page) -> ft.View:
                 on_click=lambda _: page.go("/")
             ),
             ft.Text(
-                "Settings",
+                "Settings (In development)",
                 size=24,
                 weight=ft.FontWeight.BOLD,
                 color=ft.Colors.WHITE
@@ -159,8 +172,7 @@ def create_main_view(page: ft.Page) -> ft.View:
         ft.View: The main chat view
     """
     # Get available models
-    models_handler = Models(model="llama3.2")
-    available_models = models_handler.get_available_models()
+    available_models = Models.get_available_models()
 
     # Create chat container using global state
     chat_container = ft.Container(
@@ -200,7 +212,7 @@ def create_main_view(page: ft.Page) -> ft.View:
     # Create model dropdown
     if not available_models:
         model_switch_dropdown = ft.Text(
-            "No models available. Please check Ollama installation.",
+            "No models available. Please check Ollama models installation and ensure that Ollama is running.",
             color=ft.Colors.RED_400,
             size=14
         )
@@ -368,20 +380,6 @@ def on_route_change(e):
         page.views.append(create_main_view(page))
 
     page.update()
-
-
-class ChatState:
-    """Global state for the chat application."""
-
-    def __init__(self):
-        self.messages: list[Message] = []
-        self.current_model: str = ""
-        self.agent: Optional[SlothAgent] = None
-        self.chat_container: Optional[ft.Column] = None
-
-
-# Create global state
-chat_state = ChatState()
 
 
 def initialize_chat_state(page: ft.Page):

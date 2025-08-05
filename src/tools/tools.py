@@ -1,8 +1,8 @@
 # python
 import os
 # 3rd party
-from AppOpener import open as open_app, close as close_app
-from langchain.tools import tool
+from AppOpener import open as open_app, close as close_app  # type: ignore
+from langchain.tools import tool  # type: ignore
 
 
 @tool
