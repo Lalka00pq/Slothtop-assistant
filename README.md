@@ -38,7 +38,7 @@ This is the project of AI assistant Slothtop. You can chat with him and he will 
 	or 
 - **uv** >= 0.6.14
 - Supported OS: Windows
-- Install [Ollama](https://ollama.com/)
+- Install [Ollama](https://ollama.com/) and download at least one model (for example llama3.2)
 
 ### Installation 
 1) Clone the repository
