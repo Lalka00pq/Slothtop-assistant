@@ -1,6 +1,7 @@
 # Slothtop Assistant
-
-<center><img src='screenshots/86f52602-691d-4af2-b451-37f4e1d93510.jpg' width=420 height=350></center>
+<p align="center">
+   <img src='screenshots/86f52602-691d-4af2-b451-37f4e1d93510.jpg' width=420 height=350>
+</p>
 
 >[!warning] 
 >**Project isn't ready yet**, this is only the demo version.
