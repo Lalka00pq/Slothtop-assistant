@@ -1,0 +1,22 @@
+{
+    "user_settings": {
+        "app_settings": {
+            "theme": "dark"
+        },
+        "agent_settings": {
+            "name": "Slothtop",
+            "prompt": "You are a helpful assistant. Use the tools only if it's necessary (for example, if the user asks to open an application, you should use tools, but if the user asks a general question (for example, how are you), you can answer without using tools).",
+            "model": "llama3.2"
+        }
+    },
+    "default_settings": {
+        "app_settings": {
+            "theme": "dark"
+        },
+        "agent_settings": {
+            "name": "Slothtop",
+            "prompt": "You are a helpful assistant. Use the tools only if it's necessary (for example, if the user asks to open an application, you should use tools, but if the user asks a general question (for example, how are you), you can answer without using tools).",
+            "model": "llama3.2"
+        }
+    }
+}

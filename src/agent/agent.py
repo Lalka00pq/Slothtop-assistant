@@ -1,6 +1,7 @@
 # python
 from typing import Optional
 import requests
+import json
 # project
 from src.tools.tools import open_app_tool, close_app_tool, turn_off_pc_tool, restart_pc_tool
 from src.tools.monitoring_tools.monitoring_tool import start_monitoring_cpu_tool, stop_monitoring_cpu_tool, start_monitoring_gpu_tool, stop_monitoring_gpu_tool
@@ -12,6 +13,15 @@ from langchain_core.prompts import ChatPromptTemplate  # type: ignore
 from langchain_core.tools import BaseTool  # type: ignore
 from langchain.memory import ConversationBufferMemory  # type: ignore
 from langchain.prompts import MessagesPlaceholder  # type: ignore
+from pydantic import BaseModel
+
+
+def load_settings():
+    with open('src/app/settings.json', 'r') as f:
+        return json.load(f)
+
+
+config = load_settings()
 
 
 class SlothAgent:
@@ -26,18 +36,18 @@ class SlothAgent:
             None: None
         """
         self.tools = tools_list or [
-            open_app_tool,
-            close_app_tool,
-            turn_off_pc_tool,
-            restart_pc_tool,
-            tavily_web_search_tool,
-            start_monitoring_cpu_tool,
-            stop_monitoring_cpu_tool,
-            start_monitoring_gpu_tool,
-            stop_monitoring_gpu_tool
+            # open_app_tool,
+            # close_app_tool,
+            # turn_off_pc_tool,
+            # restart_pc_tool,
+            # tavily_web_search_tool,
+            # start_monitoring_cpu_tool,
+            # stop_monitoring_cpu_tool,
+            # start_monitoring_gpu_tool,
+            # stop_monitoring_gpu_tool
         ]
         self.prompt = ChatPromptTemplate.from_messages([
-            ("system", "You are a helpful assistant. Use the tools only if it's necessary (for example, if the user asks to open an application, you should use tools, but if the user asks a general question (for example, how are you), you can answer without using tools)."),
+            ("system", config["default_settings"]["agent_settings"]["prompt"]),
             MessagesPlaceholder(variable_name="chat_history"),
             ("human", "{input}"),
             ("placeholder", "{agent_scratchpad}"),
@@ -121,3 +131,14 @@ class SlothAgent:
             ("human", "{input}"),
             ("placeholder", "{agent_scratchpad}"),
         ])
+        self.agent = create_tool_calling_agent(
+            llm=self.llm,
+            tools=self.tools,
+            prompt=self.prompt
+        )
+        self.agent_executor = AgentExecutor.from_agent_and_tools(
+            agent=self.agent,
+            tools=self.tools,
+            verbose=True,
+            memory=self.memory
+        )

@@ -1,29 +1,9 @@
-# python
-from datetime import datetime
-from typing import Optional
 # project
 from src.agent.agent import SlothAgent
 from src.models.models import Models
+from src.app.classes import Message, ChatState
 # 3rd party
 import flet as ft  # type: ignore
-
-
-class Message:
-    def __init__(self, name: str, message: str, is_user: bool = True):
-        self.name = name
-        self.message = message
-        self.is_user = is_user
-        self.timestamp = datetime.now().strftime("%H:%M")
-
-
-class ChatState:
-    """Global state for the chat application."""
-
-    def __init__(self):
-        self.messages: list[Message] = []
-        self.current_model: str = ""
-        self.agent: Optional[SlothAgent] = None
-        self.chat_container: Optional[ft.Column] = None
 
 
 chat_state = ChatState()
@@ -83,6 +63,7 @@ def create_settings_view(page: ft.Page) -> ft.View:
     Returns:
         ft.View: The settings view
     """
+
     # Header with back button
     header = ft.Row(
         controls=[
@@ -102,6 +83,20 @@ def create_settings_view(page: ft.Page) -> ft.View:
     )
 
     # Settings content
+    prompt_field = ft.TextField(
+        label="New prompt",
+        hint_text="Enter new prompt",
+        width=400,
+        multiline=True,
+        shift_enter=True
+    )
+
+    def save_prompt(e):
+        if chat_state.agent and prompt_field.value and prompt_field.value.strip():
+            chat_state.agent.change_prompt(prompt_field.value.strip())
+            print("Prompt saved", prompt_field.value)
+            page.go("/")
+
     settings_content = ft.Container(
         content=ft.Column(
             controls=[
@@ -131,12 +126,18 @@ def create_settings_view(page: ft.Page) -> ft.View:
                         controls=[
                             ft.Text("Models settings", size=16,
                                     color=ft.Colors.WHITE),
-                            ft.TextField(
-                                label="New prompt",
-                                hint_text="Enter new prompt",
-                                width=400,
-                                multiline=True,
-                                shift_enter=True
+                            ft.Row(
+                                controls=[
+                                    prompt_field,
+                                    ft.ElevatedButton(
+                                        text="Save",
+                                        bgcolor=ft.Colors.BLUE_600,
+                                        color=ft.Colors.WHITE,
+                                        width=60,
+                                        height=40,
+                                        on_click=save_prompt
+                                    )
+                                ]
                             ),
                         ],
                     ),
