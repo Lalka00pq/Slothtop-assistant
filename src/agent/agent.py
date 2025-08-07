@@ -1,5 +1,6 @@
 # python
 from typing import Optional
+import json
 import requests
 # project
 from src.tools.tools import open_app_tool, close_app_tool, turn_off_pc_tool, restart_pc_tool
@@ -125,6 +126,13 @@ class SlothAgent:
             ("human", "{input}"),
             ("placeholder", "{agent_scratchpad}"),
         ])
+        with open('src/app/settings.json', 'r+', encoding='utf-8') as file:
+            config = json.load(file)
+            config['user_settings']['agent_settings']['prompt'] = new_prompt
+            file.seek(0)
+            json.dump(config, file, indent=4, ensure_ascii=False)
+            file.truncate()
+
         self.agent = create_tool_calling_agent(
             llm=self.llm,
             tools=self.tools,
