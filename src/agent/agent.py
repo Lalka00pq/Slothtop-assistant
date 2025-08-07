@@ -1,11 +1,11 @@
 # python
 from typing import Optional
 import requests
-import json
 # project
 from src.tools.tools import open_app_tool, close_app_tool, turn_off_pc_tool, restart_pc_tool
 from src.tools.monitoring_tools.monitoring_tool import start_monitoring_cpu_tool, stop_monitoring_cpu_tool, start_monitoring_gpu_tool, stop_monitoring_gpu_tool
 from src.tools.web_work_tools import tavily_web_search_tool
+from src.schemas.schemas import Settings
 # 3rd party
 from langchain_ollama.chat_models import ChatOllama as OllamaLLM  # type: ignore
 from langchain.agents import create_tool_calling_agent, AgentExecutor  # type: ignore
@@ -13,19 +13,13 @@ from langchain_core.prompts import ChatPromptTemplate  # type: ignore
 from langchain_core.tools import BaseTool  # type: ignore
 from langchain.memory import ConversationBufferMemory  # type: ignore
 from langchain.prompts import MessagesPlaceholder  # type: ignore
-from pydantic import BaseModel
 
-
-def load_settings():
-    with open('src/app/settings.json', 'r') as f:
-        return json.load(f)
-
-
-config = load_settings()
+# settings
+config = Settings.from_json_file('src/app/settings.json')
 
 
 class SlothAgent:
-    def __init__(self, llm: str, tools_list: Optional[list[BaseTool]] = None):
+    def __init__(self, llm: str = config.user_settings.agent_settings.model, tools_list: Optional[list[BaseTool]] = None):
         """Initialize the SlothAgent with a language model and a list of tools.
 
         Args:
@@ -47,7 +41,7 @@ class SlothAgent:
             # stop_monitoring_gpu_tool
         ]
         self.prompt = ChatPromptTemplate.from_messages([
-            ("system", config["default_settings"]["agent_settings"]["prompt"]),
+            ("system", config.user_settings.agent_settings.prompt),
             MessagesPlaceholder(variable_name="chat_history"),
             ("human", "{input}"),
             ("placeholder", "{agent_scratchpad}"),
