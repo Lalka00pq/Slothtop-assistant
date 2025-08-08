@@ -2,11 +2,13 @@
 from src.agent.agent import SlothAgent
 from src.models.models import Models
 from src.app.classes import Message, ChatState
+from src.schemas.schemas import Settings
 # 3rd party
 import flet as ft  # type: ignore
 
 
 chat_state = ChatState()
+config = Settings.from_json_file('src/app/settings.json')
 
 
 def create_message_bubble(message: Message) -> ft.Container:
@@ -82,6 +84,13 @@ def create_settings_view(page: ft.Page) -> ft.View:
         alignment=ft.MainAxisAlignment.START
     )
 
+    save_message = ft.SnackBar(
+        content=ft.Text("Prompt saved successfully!",
+                        color=ft.Colors.WHITE),
+        bgcolor=ft.Colors.GREEN_300,
+        behavior=ft.SnackBarBehavior.FLOATING,
+    )
+
     # Settings content
     prompt_field = ft.TextField(
         label="New prompt",
@@ -92,16 +101,22 @@ def create_settings_view(page: ft.Page) -> ft.View:
     )
 
     def save_prompt(e):
+        """Save the new prompt to the agent.
+
+        Args:
+            e : The event triggered by the button click.
+        """
         if chat_state.agent and prompt_field.value and prompt_field.value.strip():
             chat_state.agent.change_prompt(prompt_field.value.strip())
-            print("Prompt saved", prompt_field.value)
-            page.go("/")
+            page.open(save_message)
+            prompt_field.value = ""
+            page.update()
 
     settings_content = ft.Container(
         content=ft.Column(
             controls=[
                 ft.Text(
-                    "Application Settings",
+                    "Application Settings:",
                     size=20,
                     weight=ft.FontWeight.BOLD,
                     color=ft.Colors.WHITE
@@ -124,8 +139,16 @@ def create_settings_view(page: ft.Page) -> ft.View:
                 ft.Container(
                     content=ft.Column(
                         controls=[
-                            ft.Text("Models settings", size=16,
+                            ft.Text("Models settings:", size=16,
                                     color=ft.Colors.WHITE),
+                            ft.Column(
+                                controls=[
+                                    ft.Text(
+                                        "Current prompt:", size=14, color=ft.Colors.WHITE),
+                                    ft.Text(config.user_settings.agent_settings.prompt,
+                                            size=14, color=ft.Colors.WHITE)
+                                ]
+                            ),
                             ft.Row(
                                 controls=[
                                     prompt_field,
