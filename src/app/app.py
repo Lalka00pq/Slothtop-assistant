@@ -65,7 +65,9 @@ def create_settings_view(page: ft.Page) -> ft.View:
     Returns:
         ft.View: The settings view
     """
-
+    config = Settings.from_json_file('src/app/settings.json')
+    current_prompt = config.user_settings.agent_settings.prompt
+    prompt_text = ft.Text(current_prompt, size=14, color=ft.Colors.WHITE)
     # Header with back button
     header = ft.Row(
         controls=[
@@ -109,6 +111,9 @@ def create_settings_view(page: ft.Page) -> ft.View:
         if chat_state.agent and prompt_field.value and prompt_field.value.strip():
             chat_state.agent.change_prompt(prompt_field.value.strip())
             page.open(save_message)
+            nonlocal current_prompt
+            current_prompt = prompt_field.value.strip()
+            prompt_text.value = current_prompt
             prompt_field.value = ""
             page.update()
 
@@ -145,8 +150,7 @@ def create_settings_view(page: ft.Page) -> ft.View:
                                 controls=[
                                     ft.Text(
                                         "Current prompt:", size=14, color=ft.Colors.WHITE),
-                                    ft.Text(config.user_settings.agent_settings.prompt,
-                                            size=14, color=ft.Colors.WHITE)
+                                    prompt_text
                                 ]
                             ),
                             ft.Row(
