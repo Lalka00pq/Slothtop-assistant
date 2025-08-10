@@ -1,32 +1,14 @@
-# python
-from datetime import datetime
-from typing import Optional
 # project
 from src.agent.agent import SlothAgent
 from src.models.models import Models
+from src.app.classes import Message, ChatState
+from src.schemas.schemas import Settings
 # 3rd party
 import flet as ft  # type: ignore
 
 
-class Message:
-    def __init__(self, name: str, message: str, is_user: bool = True):
-        self.name = name
-        self.message = message
-        self.is_user = is_user
-        self.timestamp = datetime.now().strftime("%H:%M")
-
-
-class ChatState:
-    """Global state for the chat application."""
-
-    def __init__(self):
-        self.messages: list[Message] = []
-        self.current_model: str = ""
-        self.agent: Optional[SlothAgent] = None
-        self.chat_container: Optional[ft.Column] = None
-
-
 chat_state = ChatState()
+config = Settings.from_json_file('src/app/settings.json')
 
 
 def create_message_bubble(message: Message) -> ft.Container:
@@ -83,6 +65,10 @@ def create_settings_view(page: ft.Page) -> ft.View:
     Returns:
         ft.View: The settings view
     """
+    config = Settings.from_json_file('src/app/settings.json')
+    current_prompt = config.user_settings.agent_settings.prompt
+    default_prompt = config.default_settings.agent_settings.prompt
+    prompt_text = ft.Text(current_prompt, size=14, color=ft.Colors.WHITE)
     # Header with back button
     header = ft.Row(
         controls=[
@@ -101,12 +87,51 @@ def create_settings_view(page: ft.Page) -> ft.View:
         alignment=ft.MainAxisAlignment.START
     )
 
+    save_message = ft.SnackBar(
+        content=ft.Text("Prompt saved successfully!",
+                        color=ft.Colors.WHITE),
+        bgcolor=ft.Colors.GREEN_300,
+        behavior=ft.SnackBarBehavior.FLOATING,
+    )
+
     # Settings content
+    prompt_field = ft.TextField(
+        label="New prompt",
+        hint_text="Enter new prompt",
+        width=400,
+        multiline=True,
+        shift_enter=True
+    )
+
+    def save_prompt(e):
+        """Save the new prompt to the agent.
+
+        Args:
+            e : The event triggered by the button click.
+        """
+        if chat_state.agent and prompt_field.value and prompt_field.value.strip():
+            chat_state.agent.change_prompt(prompt_field.value.strip())
+            page.open(save_message)
+            nonlocal current_prompt
+            current_prompt = prompt_field.value.strip()
+            prompt_text.value = current_prompt
+            prompt_field.value = ""
+            page.update()
+
+    def set_default_prompt(e):
+        """Set the default prompt for the agent."""
+        if chat_state.agent:
+            chat_state.agent.change_prompt(default_prompt)
+            prompt_text.value = default_prompt
+            prompt_field.value = ""
+            page.update()
+            page.open(save_message)
+
     settings_content = ft.Container(
         content=ft.Column(
             controls=[
                 ft.Text(
-                    "Application Settings",
+                    "Application Settings:",
                     size=20,
                     weight=ft.FontWeight.BOLD,
                     color=ft.Colors.WHITE
@@ -129,15 +154,35 @@ def create_settings_view(page: ft.Page) -> ft.View:
                 ft.Container(
                     content=ft.Column(
                         controls=[
-                            ft.Text("Models settings", size=16,
-                                    color=ft.Colors.WHITE),
-                            ft.TextField(
-                                label="New prompt",
-                                hint_text="Enter new prompt",
-                                width=400,
-                                multiline=True,
-                                shift_enter=True
+                            ft.Text("Models settings:", size=20,
+                                    color=ft.Colors.WHITE,
+                                    weight=ft.FontWeight.BOLD),
+                            ft.Column(
+                                controls=[
+                                    ft.Text(
+                                        "Current prompt:", size=14, color=ft.Colors.WHITE),
+                                    prompt_text
+                                ]
                             ),
+                            ft.Row(
+                                controls=[
+                                    prompt_field,
+                                    ft.ElevatedButton(
+                                        text="Save",
+                                        bgcolor=ft.Colors.BLUE_600,
+                                        color=ft.Colors.WHITE,
+                                        width=60,
+                                        height=40,
+                                        on_click=save_prompt
+                                    )
+                                ]
+                            ),
+                            ft.ElevatedButton(
+                                text='Set default prompt',
+                                on_click=set_default_prompt,
+                                bgcolor=ft.Colors.BLUE_600,
+                                color=ft.Colors.WHITE
+                            )
                         ],
                     ),
                     padding=10,
@@ -387,12 +432,27 @@ def initialize_chat_state(page: ft.Page):
     if chat_state.agent is None:
         # Initialize models
         models_handler = Models(model="llama3.2")
-        available_models = models_handler.get_available_models()
-        default_model = available_models[0] if available_models else "llama3.2"
-
+        try:
+            available_models = models_handler.get_available_models()
+            if available_models:
+                default_model = available_models[0]
+                try:
+                    chat_state.agent = SlothAgent(llm=default_model)
+                    chat_state.current_model = default_model
+                except ConnectionError as e:
+                    print(f"Error connecting to Ollama server: {e}")
+                    chat_state.agent = None
+                    chat_state.current_model = ""
+                except Exception as e:
+                    print(f"Error initializing agent: {e}")
+            else:
+                chat_state.agent = None
+                chat_state.current_model = ""
+        except Exception as e:
+            print(f"Error fetching available models: {e}")
+            chat_state.agent = None
+            chat_state.current_model = ""
         # Initialize agent
-        chat_state.agent = SlothAgent(llm=default_model)
-        chat_state.current_model = default_model
 
         # Initialize chat container
         chat_state.chat_container = ft.Column(

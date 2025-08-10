@@ -1,11 +1,14 @@
 import requests
 from typing import List
+from dotenv import load_dotenv
+import os
+load_dotenv()
 
 # TODO Change with ollama library
 
 
 class Models:
-    OLLAMA_API_URL = "http://localhost:11434"
+    OLLAMA_API_URL = os.getenv('OLLAMA_API_URL')
 
     @staticmethod
     def get_available_models() -> List[str]:
@@ -15,14 +18,18 @@ class Models:
             List[str]: List of available model names. Empty list if no models found or API error.
         """
         try:
-            response = requests.get(f"{Models.OLLAMA_API_URL}/api/tags")
+            response = requests.get(
+                f"{Models.OLLAMA_API_URL}/api/tags", timeout=5)
             if response.status_code == 200:
                 models_data = response.json().get("models", [])
                 return [model["name"] for model in models_data]
             return []
         except requests.RequestException as e:
-            raise Exception(
-                f"Error getting available models from Ollama API: {e}")
+            print(f"Warning: Could not connect to Ollama API: {e}")
+            return []
+        except Exception as e:
+            print(f"Warning: Unexpected error while fetching models: {e}")
+            return []
 
     def __init__(self, model: str):
         """Initialize Models class.

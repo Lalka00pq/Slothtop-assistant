@@ -7,9 +7,9 @@ import tempfile
 from faster_whisper import WhisperModel
 import torch
 
-# Настройки
+# setup for audio recording and transcription
 SAMPLERATE = 16000
-BLOCK_DURATION = 10  # Секунд аудио в буфере
+BLOCK_DURATION = 10  # seconds of audio in buffer
 
 q = queue.Queue()
 recording = True
@@ -19,7 +19,7 @@ model = WhisperModel("base", compute_type="int8",
 
 
 def callback(indata, frames, time_info, status):
-    """Захватываем аудио в буфер"""
+    """Capture audio into buffer"""
     if status:
         print(status)
     q.put(indata.copy())
@@ -27,7 +27,7 @@ def callback(indata, frames, time_info, status):
 
 def record_and_transcribe() -> None:
     with sd.InputStream(samplerate=SAMPLERATE, channels=1, callback=callback):
-        print("Говорите... (нажмите Ctrl+C для выхода)")
+        print("Starting audio recording...")
         audio_buffer = np.empty((0, 1), dtype=np.float32)
 
         try:
@@ -43,7 +43,7 @@ def record_and_transcribe() -> None:
 
                         with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmpfile:
                             wav.write(tmpfile.name, SAMPLERATE, block)
-                            print("Распознаю...")
+                            print("Recognizing...")
                             segments, _ = model.transcribe(tmpfile.name)
 
                             for seg in segments:
@@ -56,4 +56,4 @@ def record_and_transcribe() -> None:
                 except queue.Empty:
                     pass
         except KeyboardInterrupt:
-            print("Остановлено пользователем.")
+            print("Stopped by user.")
