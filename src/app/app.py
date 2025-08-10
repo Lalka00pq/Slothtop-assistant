@@ -411,12 +411,27 @@ def initialize_chat_state(page: ft.Page):
     if chat_state.agent is None:
         # Initialize models
         models_handler = Models(model="llama3.2")
-        available_models = models_handler.get_available_models()
-        default_model = available_models[0] if available_models else "llama3.2"
-
+        try:
+            available_models = models_handler.get_available_models()
+            if available_models:
+                default_model = available_models[0]
+                try:
+                    chat_state.agent = SlothAgent(llm=default_model)
+                    chat_state.current_model = default_model
+                except ConnectionError as e:
+                    print(f"Error connecting to Ollama server: {e}")
+                    chat_state.agent = None
+                    chat_state.current_model = ""
+                except Exception as e:
+                    print(f"Error initializing agent: {e}")
+            else:
+                chat_state.agent = None
+                chat_state.current_model = ""
+        except Exception as e:
+            print(f"Error fetching available models: {e}")
+            chat_state.agent = None
+            chat_state.current_model = ""
         # Initialize agent
-        chat_state.agent = SlothAgent(llm=default_model)
-        chat_state.current_model = default_model
 
         # Initialize chat container
         chat_state.chat_container = ft.Column(

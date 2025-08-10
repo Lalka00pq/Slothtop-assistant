@@ -20,6 +20,25 @@ config = Settings.from_json_file('src/app/settings.json')
 
 
 class SlothAgent:
+    @classmethod
+    def check_ollama_connection(cls) -> bool:
+        """Check if Ollama server is running and accessible.
+
+        Returns:
+            bool: True if Ollama server is running and accessible, False otherwise.
+        """
+        try:
+            # Try to connect to the Ollama API with timeout
+            response = requests.get(
+                "http://localhost:11434", timeout=5)
+            return response.status_code == 200
+        except requests.exceptions.RequestException as e:
+            print(f"Error connecting to Ollama server: {e}")
+            return False
+        except Exception as e:
+            print(f"Unexpected error checking Ollama connection: {e}")
+            return False
+
     def __init__(self, llm: str = config.user_settings.agent_settings.model, tools_list: Optional[list[BaseTool]] = None):
         """Initialize the SlothAgent with a language model and a list of tools.
 
@@ -31,15 +50,15 @@ class SlothAgent:
             None: None
         """
         self.tools = tools_list or [
-            # open_app_tool,
-            # close_app_tool,
-            # turn_off_pc_tool,
-            # restart_pc_tool,
-            # tavily_web_search_tool,
-            # start_monitoring_cpu_tool,
-            # stop_monitoring_cpu_tool,
-            # start_monitoring_gpu_tool,
-            # stop_monitoring_gpu_tool
+            open_app_tool,
+            close_app_tool,
+            turn_off_pc_tool,
+            restart_pc_tool,
+            tavily_web_search_tool,
+            start_monitoring_cpu_tool,
+            stop_monitoring_cpu_tool,
+            start_monitoring_gpu_tool,
+            stop_monitoring_gpu_tool
         ]
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", config.user_settings.agent_settings.prompt),
@@ -47,6 +66,9 @@ class SlothAgent:
             ("human", "{input}"),
             ("placeholder", "{agent_scratchpad}"),
         ])
+        if not self.check_ollama_connection():
+            raise Exception(
+                "Ollama server is not running. Please check if Ollama server is running.")
         self.llm = OllamaLLM(model=llm)
         self.agent = create_tool_calling_agent(
             llm=self.llm,
@@ -75,22 +97,6 @@ class SlothAgent:
         """
         response = self.agent_executor.invoke({"input": query})
         return response
-
-    def check_ollama_connection(self) -> bool:
-        """Check if Ollama server is running and accessible.
-
-        Returns:
-            bool: True if Ollama server is running and accessible, False otherwise.
-        """
-        try:
-            # Try to connect to the Ollama API
-            response = requests.get(
-                "http://localhost:11434")
-            return response.status_code == 200
-        except requests.exceptions.RequestException as e:
-            print(
-                f"Error connecting to Ollama server: {e} Please check if Ollama server is running.")
-            return False
 
     def change_llm(self, new_llm: str) -> None:
         """Change the language model used by the agent.
