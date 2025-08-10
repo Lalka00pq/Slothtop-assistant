@@ -67,6 +67,7 @@ def create_settings_view(page: ft.Page) -> ft.View:
     """
     config = Settings.from_json_file('src/app/settings.json')
     current_prompt = config.user_settings.agent_settings.prompt
+    default_prompt = config.default_settings.agent_settings.prompt
     prompt_text = ft.Text(current_prompt, size=14, color=ft.Colors.WHITE)
     # Header with back button
     header = ft.Row(
@@ -117,6 +118,15 @@ def create_settings_view(page: ft.Page) -> ft.View:
             prompt_field.value = ""
             page.update()
 
+    def set_default_prompt(e):
+        """Set the default prompt for the agent."""
+        if chat_state.agent:
+            chat_state.agent.change_prompt(default_prompt)
+            prompt_text.value = default_prompt
+            prompt_field.value = ""
+            page.update()
+            page.open(save_message)
+
     settings_content = ft.Container(
         content=ft.Column(
             controls=[
@@ -144,8 +154,9 @@ def create_settings_view(page: ft.Page) -> ft.View:
                 ft.Container(
                     content=ft.Column(
                         controls=[
-                            ft.Text("Models settings:", size=16,
-                                    color=ft.Colors.WHITE),
+                            ft.Text("Models settings:", size=20,
+                                    color=ft.Colors.WHITE,
+                                    weight=ft.FontWeight.BOLD),
                             ft.Column(
                                 controls=[
                                     ft.Text(
@@ -166,6 +177,12 @@ def create_settings_view(page: ft.Page) -> ft.View:
                                     )
                                 ]
                             ),
+                            ft.ElevatedButton(
+                                text='Set default prompt',
+                                on_click=set_default_prompt,
+                                bgcolor=ft.Colors.BLUE_600,
+                                color=ft.Colors.WHITE
+                            )
                         ],
                     ),
                     padding=10,

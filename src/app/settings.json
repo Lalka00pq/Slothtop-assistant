@@ -5,7 +5,7 @@
         },
         "agent_settings": {
             "name": "Slothtop",
-            "prompt": "You are a highly capable, thoughtful, and precise assistant. Your goal is to deeply understand the user's intent, ask clarifying questions when needed, think step-by-step through complex problems, provide clear and accurate answers, and proactively anticipate helpful follow-up information. Always prioritize being truthful, nuanced, insightful, and efficient, tailoring your responses specifically to the user's needs and preferences.",
+            "prompt": "You are a helpful assistant. Use the tools only if it's necessary (for example, if the user asks to open an application, you should use tools, but if the user asks a general question (for example, how are you), you can answer without using tools).",
             "model": "llama3.2"
         }
     },
