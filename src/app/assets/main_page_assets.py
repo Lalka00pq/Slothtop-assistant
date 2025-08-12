@@ -2,6 +2,7 @@
 from src.app.assets.classes import Message
 from src.models.models import Models
 from src.app.assets.classes import ChatState
+from src.voice.voice_recognition import VoiceRecognition
 # 3rd party
 import flet as ft
 
@@ -57,7 +58,7 @@ def create_message_bubble(message: Message) -> ft.Container:
     )
 
 
-def create_main_view(page: ft.Page, chat_state: ChatState) -> ft.View:
+def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> ft.View:
     """Create the main chat view with all its controls.
 
     Returns:
@@ -65,6 +66,8 @@ def create_main_view(page: ft.Page, chat_state: ChatState) -> ft.View:
     """
     # Get available models
     available_models = Models.get_available_models()
+
+    voice_recognition = VoiceRecognition()
 
     # Create chat container using global state
     chat_container = ft.Container(
@@ -100,6 +103,28 @@ def create_main_view(page: ft.Page, chat_state: ChatState) -> ft.View:
         color=ft.Colors.WHITE,
         height=50
     )
+    microphone_button = ft.IconButton(
+        icon=ft.Icons.MIC_OFF,
+        bgcolor=ft.Colors.BLUE_600,
+        on_click=lambda e: change_microphone_state(e),
+    )
+
+    def change_microphone_state(e):
+        """Toggle the microphone state."""
+        nonlocal micr_state
+        if micr_state:
+            microphone_button.icon = ft.Icons.MIC_OFF
+            page.update()
+            micr_state = False
+            voice_recognition.stop_recording()
+        else:
+            microphone_button.icon = ft.Icons.MIC
+            page.update()
+
+            micr_state = True
+            voice_recognition.start_recording()
+
+        page.update()
 
     # Create model dropdown
     if not available_models:
@@ -132,7 +157,7 @@ def create_main_view(page: ft.Page, chat_state: ChatState) -> ft.View:
 
     def send_message(e):
         """Send a message to the chat."""
-        if input_field.value and input_field.value.strip() and chat_state.agent is not None:
+        if (input_field.value and input_field.value.strip() and chat_state.agent is not None):
             # Create and save user message
             user_message = Message(
                 name="You",
@@ -228,6 +253,7 @@ def create_main_view(page: ft.Page, chat_state: ChatState) -> ft.View:
         content=ft.Row(
             controls=[
                 input_field,
+                microphone_button,
                 send_button,
             ],
             spacing=12,

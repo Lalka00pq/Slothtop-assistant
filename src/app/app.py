@@ -12,6 +12,7 @@ import flet as ft  # type: ignore
 
 chat_state = ChatState()
 config = Settings.from_json_file('src/app/settings.json')
+micr_state = False
 
 
 def on_route_change(e):
@@ -26,7 +27,7 @@ def on_route_change(e):
     if page.route == "/settings":
         page.views.append(create_settings_view(page, chat_state))
     else:
-        page.views.append(create_main_view(page, chat_state))
+        page.views.append(create_main_view(page, chat_state, micr_state))
 
     page.update()
 
@@ -95,5 +96,5 @@ def app_page(page: ft.Page):
 
     # Initialize views
     page.views.clear()
-    page.views.append(create_main_view(page, chat_state))
+    page.views.append(create_main_view(page, chat_state, micr_state))
     page.update()
