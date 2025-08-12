@@ -29,16 +29,19 @@ def create_message_bubble(message: Message) -> ft.Container:
                     weight=ft.FontWeight.BOLD
                 ),
                 ft.Container(
-                    content=ft.Text(
-                        message.message,
-                        color=text_color,
-                        size=14,
-                        weight=ft.FontWeight.W_500
+                    content=ft.SelectionArea(
+                        ft.Text(
+                            message.message,
+                            color=text_color,
+                            size=14,
+                            weight=ft.FontWeight.W_500
+                        ),
                     ),
                     padding=ft.padding.all(12),
                     border_radius=ft.border_radius.all(12),
                     bgcolor=bg_color,
                     margin=ft.margin.only(bottom=4)
+
                 ),
                 ft.Text(
                     message.timestamp,
@@ -129,7 +132,7 @@ def create_main_view(page: ft.Page, chat_state: ChatState) -> ft.View:
 
     def send_message(e):
         """Send a message to the chat."""
-        if input_field.value and input_field.value.strip():
+        if input_field.value and input_field.value.strip() and chat_state.agent is not None:
             # Create and save user message
             user_message = Message(
                 name="You",
