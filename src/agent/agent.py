@@ -50,8 +50,8 @@ class SlothAgent:
             None: None
         """
         self.tools = tools_list or [
-            # open_app_tool,
-            # close_app_tool,
+            open_app_tool,
+            close_app_tool,
             # turn_off_pc_tool,
             # restart_pc_tool,
             # tavily_web_search_tool,

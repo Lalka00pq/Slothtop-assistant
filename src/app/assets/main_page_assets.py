@@ -67,8 +67,6 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
     # Get available models
     available_models = Models.get_available_models()
 
-    voice_recognition = VoiceRecognition()
-
     # Create chat container using global state
     chat_container = ft.Container(
         content=chat_state.chat_container,
@@ -107,6 +105,42 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
         icon=ft.Icons.MIC_OFF,
         bgcolor=ft.Colors.BLUE_600,
         on_click=lambda e: change_microphone_state(e),
+    )
+
+    def process_voice_input(transcribed_text: str):
+        """Voice input processing"""
+        if chat_state.agent is not None:
+            user_message = Message(
+                name="You",
+                message=transcribed_text,
+                is_user=True
+            )
+            chat_state.messages.append(user_message)
+
+            if chat_state.chat_container:
+                chat_state.chat_container.controls.append(
+                    create_message_bubble(user_message))
+                chat_state.chat_container.scroll_to(
+                    offset=-1, duration=200)
+                page.update()
+
+            ai_message = Message(
+                name="Slothtop Assistant",
+                message=chat_state.agent.invoke_agent(
+                    transcribed_text)["output"],
+                is_user=False
+            )
+            chat_state.messages.append(ai_message)
+
+            if chat_state.chat_container:
+                chat_state.chat_container.controls.append(
+                    create_message_bubble(ai_message))
+                chat_state.chat_container.scroll_to(
+                    offset=-1, duration=200)
+                page.update()
+
+    voice_recognition = VoiceRecognition(
+        on_transcribe_callback=process_voice_input
     )
 
     def change_microphone_state(e):

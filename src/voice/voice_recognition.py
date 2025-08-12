@@ -11,7 +11,7 @@ import torch
 class VoiceRecognition:
     """Class for real-time voice recognition using Whisper model."""
 
-    def __init__(self, SAMPLE_RATE: int = 16000, BLOCK_DURATION: int = 10):
+    def __init__(self, on_transcribe_callback, SAMPLE_RATE: int = 16000, BLOCK_DURATION: int = 10):
         self.SAMPLE_RATE = SAMPLE_RATE
         self.BLOCK_DURATION = BLOCK_DURATION
         self.recording = False
@@ -19,6 +19,7 @@ class VoiceRecognition:
         self.stream = None
         self.model = WhisperModel("base", compute_type="int8",
                                   device="cuda" if torch.cuda.is_available() else "cpu")
+        self.on_transcribe_callback = on_transcribe_callback
 
     def _callback(self, indata, frames, time, status):
         """Capture audio into buffer"""
@@ -55,7 +56,12 @@ class VoiceRecognition:
                             segments, _ = self.model.transcribe(tmpfile.name)
 
                             for seg in segments:
-                                print(f"{seg.text.strip()}")
+                                transcribed_text = seg.text.strip()
+                                print(f"Transcribed: {transcribed_text}")
+                                # Вызываем callback с распознанным текстом
+                                if self.on_transcribe_callback:
+                                    self.on_transcribe_callback(
+                                        transcribed_text)
                 except queue.Empty:
                     if not self.recording:
                         break
