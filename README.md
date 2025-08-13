@@ -3,8 +3,11 @@
    <img src='screenshots/86f52602-691d-4af2-b451-37f4e1d93510.jpg' width=420 height=350>
 </p>
 
+>[!important] 
+>New update is here!!!. In 0.2.0v was added voice recognition. Now you can use your voice to interact with assistant!
+
 >[!warning] 
->**Project isn't ready yet**, this is only the demo version.
+>**Project isn't ready yet**, this is only the demo version. The project may contain bugs and critical errors.
 
 >[!important] 
 >This project is **only for Windows** OS :(  
@@ -67,8 +70,11 @@ This is the project of AI assistant Slothtop. You can chat with him and he will 
 ```env
 TAVILY_API_KEY=your-api-key
 ```
-
-6) Run the project
+6) In .env file you should setup your Ollama url (Only if you have changed Ollama port from default 11434)
+```env
+OLLAMA_API_URL=http://localhost:11434
+```
+7) Run the project
 ```bash
   python main.py
 ```
