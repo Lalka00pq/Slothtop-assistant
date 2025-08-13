@@ -84,8 +84,7 @@ def app_page(page: ft.Page):
     page.window.height = 800
     page.window.min_width = 500
     page.window.min_height = 500
-    page.window.left = 950
-    page.window.top = 0
+    page.window.center()
 
     # Initialize chat state
     initialize_chat_state(page)
