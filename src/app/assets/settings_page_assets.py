@@ -24,7 +24,7 @@ def create_settings_view(page: ft.Page, chat_state: ChatState) -> ft.View:
                 on_click=lambda _: page.go("/")
             ),
             ft.Text(
-                "Settings (In development)",
+                "Settings",
                 size=24,
                 weight=ft.FontWeight.BOLD,
                 color=ft.Colors.WHITE
@@ -86,7 +86,8 @@ def create_settings_view(page: ft.Page, chat_state: ChatState) -> ft.View:
                 ft.Container(
                     content=ft.Column(
                         controls=[
-                            ft.Text("Theme", size=16, color=ft.Colors.WHITE),
+                            ft.Text("Theme (in development)",
+                                    size=16, color=ft.Colors.WHITE),
                             ft.Switch(
                                 label="Dark Mode",
                                 value=True,

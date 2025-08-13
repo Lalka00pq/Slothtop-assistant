@@ -93,7 +93,7 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
         shift_enter=True
     )
 
-    # Create send button
+    # Sending message
     send_button = ft.ElevatedButton(
         text="Send",
         icon=ft.Icons.SEND,
@@ -105,6 +105,19 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
         icon=ft.Icons.MIC_OFF,
         bgcolor=ft.Colors.BLUE_600,
         on_click=lambda e: change_microphone_state(e),
+    )
+
+    microphone_on_message = ft.SnackBar(
+        content=ft.Text(
+            "Microphone enabled. You can say your command", color=ft.Colors.WHITE),
+        bgcolor=ft.Colors.GREEN_300,
+        behavior=ft.SnackBarBehavior.FLOATING,
+    )
+    microphone_off_message = ft.SnackBar(
+        content=ft.Text(
+            "Microphone disabled.", color=ft.Colors.WHITE),
+        bgcolor=ft.Colors.RED_300,
+        behavior=ft.SnackBarBehavior.FLOATING,
     )
 
     def process_voice_input(transcribed_text: str):
@@ -148,11 +161,13 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
         nonlocal micr_state
         if micr_state:
             microphone_button.icon = ft.Icons.MIC_OFF
+            page.open(microphone_off_message)
             page.update()
             micr_state = False
             voice_recognition.stop_recording()
         else:
             microphone_button.icon = ft.Icons.MIC
+            page.open(microphone_on_message)
             page.update()
 
             micr_state = True
