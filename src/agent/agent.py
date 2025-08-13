@@ -52,13 +52,13 @@ class SlothAgent:
         self.tools = tools_list or [
             open_app_tool,
             close_app_tool,
-            turn_off_pc_tool,
-            restart_pc_tool,
-            tavily_web_search_tool,
-            start_monitoring_cpu_tool,
-            stop_monitoring_cpu_tool,
-            start_monitoring_gpu_tool,
-            stop_monitoring_gpu_tool
+            # turn_off_pc_tool,
+            # restart_pc_tool,
+            # tavily_web_search_tool,
+            # start_monitoring_cpu_tool,
+            # stop_monitoring_cpu_tool,
+            # start_monitoring_gpu_tool,
+            # stop_monitoring_gpu_tool
         ]
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", config.user_settings.agent_settings.prompt),
