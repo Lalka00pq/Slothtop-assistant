@@ -8,13 +8,13 @@ from src.tools.monitoring_tools.monitoring_tool import start_monitoring_cpu_tool
 from src.tools.web_work_tools import tavily_web_search_tool
 from src.schemas.schemas import Settings
 # 3rd party
-from langchain_ollama.chat_models import ChatOllama as OllamaLLM  # type: ignore
-from langchain.agents import create_tool_calling_agent, AgentExecutor  # type: ignore
-from langchain_core.prompts import ChatPromptTemplate  # type: ignore
-from langchain_core.tools import BaseTool  # type: ignore
-from langchain.memory import ConversationBufferMemory  # type: ignore
-from langchain.prompts import MessagesPlaceholder  # type: ignore
-
+from langchain_ollama.chat_models import ChatOllama as OllamaLLM
+from langchain.agents import create_tool_calling_agent, AgentExecutor
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.tools import BaseTool
+from langchain.memory import ConversationBufferMemory
+from langchain.prompts import MessagesPlaceholder
+import ollama
 # settings
 config = Settings.from_json_file('src/app/settings.json')
 
@@ -29,9 +29,8 @@ class SlothAgent:
         """
         try:
             # Try to connect to the Ollama API with timeout
-            response = requests.get(
-                "http://localhost:11434", timeout=5)
-            return response.status_code == 200
+            ollama.list()
+            return True
         except requests.exceptions.RequestException as e:
             print(f"Error connecting to Ollama server: {e}")
             return False
@@ -39,12 +38,14 @@ class SlothAgent:
             print(f"Unexpected error checking Ollama connection: {e}")
             return False
 
-    def __init__(self, llm: str = config.user_settings.agent_settings.model, tools_list: Optional[list[BaseTool]] = None):
+    def __init__(self, llm: str = config.user_settings.agent_settings.model,
+                 tools_list: Optional[list[BaseTool]] = None):
         """Initialize the SlothAgent with a language model and a list of tools.
 
         Args:
             llm (str): The language model to use for the agent.
-            tools_list (Optional[list[BaseTool]], optional): A list of tools the agent can use. Defaults to None.
+            tools_list (Optional[list[BaseTool]], optional): A list of tools the agent can use.
+              Defaults to None.
 
         Returns:
             None: None

@@ -15,6 +15,7 @@ dependencies = [
     "langchain-community>=0.3.26",
     "langchain-ollama>=0.3.3",
     "langchain-tavily>=0.2.10",
+    "ollama>=0.5.1",
     "psutil>=7.0.0",
     "pydantic>=2.11.7",
     "scipy>=1.15.3",
