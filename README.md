@@ -53,8 +53,19 @@ This is the project of AI assistant Slothtop. You can chat with him and he will 
 ```bash
   cd slothtop-assistant
 ```
-
-3) Install project dependencies (using pip or uv)
+3) Create `venv` in the project directory
+```bash
+  python -m venv .venv
+```
+or 
+```bash
+  uv venv
+```
+4) Activate venv
+```bash
+  .venv\Scripts\activate
+```
+5) Install project dependencies (using pip or uv)
    Using `pip`:
 ```bash
   pip install requirements.txt
@@ -63,18 +74,17 @@ This is the project of AI assistant Slothtop. You can chat with him and he will 
 ```bash
   uv sync
 ```
+6) Go to [Tavily](https://www.tavily.com/) and set up your API key if you don't have it
 
-4) Go to [Tavily](https://www.tavily.com/) and set up your API key if you don't have it
-
-5) In the project directory set up your API key in .env_example file (you should rename it to .env)
+7) In the project directory set up your API key in .env_example file (you should rename it to .env)
 ```env
 TAVILY_API_KEY=your-api-key
 ```
-6) In .env file you should setup your Ollama url (Only if you have changed Ollama port from default 11434)
+8) In .env file you should setup your Ollama url (Only if you have changed Ollama port from default 11434)
 ```env
 OLLAMA_API_URL=http://localhost:11434
 ```
-7) Run the project
+9) Run the project
 ```bash
   python main.py
 ```
