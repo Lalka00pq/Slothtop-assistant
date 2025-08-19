@@ -1,9 +1,9 @@
 # project
-from src.app.assets.classes import ChatState
-from src.app.assets.settings_page_assets import create_settings_view
+from src.schemas.classes import ChatState
+from src.pages.settings_page_assets import create_settings_view
 from src.schemas.schemas import Settings
-from src.app.assets.main_page_assets import create_main_view
-from src.app.assets.agent_state import initialize_chat_state
+from src.pages.main_page_assets import create_main_view
+from src.agent.agent_state import initialize_chat_state
 # 3rd party
 import flet as ft
 

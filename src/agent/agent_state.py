@@ -1,7 +1,7 @@
 # project
-from src.app.assets.classes import ChatState
+from src.schemas.classes import ChatState
 from src.models.models import Models
-from src.app.assets.classes import Message
+from src.schemas.classes import Message
 from src.agent.agent import SlothAgent
 # 3rd party
 import flet as ft

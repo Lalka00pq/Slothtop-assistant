@@ -1,10 +1,8 @@
 # project
-from src.app.assets.classes import Message
+from src.schemas.classes import Message, ChatState
 from src.models.models import Models
-from src.app.assets.classes import ChatState
 from src.voice.voice_recognition import VoiceRecognition
-from src.app.assets.agent_state import initialize_chat_state
-from src.app.assets.agent_state import create_message_bubble
+from src.agent.agent_state import initialize_chat_state, create_message_bubble
 # 3rd party
 import flet as ft
 
@@ -331,7 +329,7 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
                 ft.Row(
                     controls=[
                         ft.Image(
-                            src=r"src\app\sloth_5980972.png",
+                            src=r"src\assets\sloth_5980972.png",
                             width=50,
                             height=50,
                             color=ft.Colors.BLUE_600,
