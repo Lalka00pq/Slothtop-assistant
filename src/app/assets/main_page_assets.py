@@ -240,11 +240,15 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
                 ],
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 spacing=8,
+                expand=True,
+                width=float('inf'),
             ),
             padding=ft.padding.all(20),
             border=ft.border.all(1, ft.Colors.RED_400),
             border_radius=ft.border_radius.all(12),
             bgcolor=ft.Colors.with_opacity(0.1, ft.Colors.RED_400),
+            expand=True,
+            width=float('inf'),
         )
     else:
         model_switch_dropdown = ft.Dropdown(
