@@ -10,3 +10,8 @@ wheels/
 .venv
 .env
 .vscode/
+Data/
+logs/
+build.bat
+main.exe
+main.spec
