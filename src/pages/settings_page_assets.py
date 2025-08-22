@@ -1,5 +1,5 @@
 # project
-from src.app.assets.classes import ChatState
+from src.schemas.classes import ChatState
 from src.schemas.schemas import Settings
 # 3rd party
 import flet as ft

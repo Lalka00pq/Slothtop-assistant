@@ -1,61 +1,10 @@
 # project
-from src.app.assets.classes import Message
+from src.schemas.classes import Message, ChatState
 from src.models.models import Models
-from src.app.assets.classes import ChatState
 from src.voice.voice_recognition import VoiceRecognition
+from src.agent.agent_state import initialize_chat_state, create_message_bubble
 # 3rd party
 import flet as ft
-
-
-def create_message_bubble(message: Message) -> ft.Container:
-    """Create a styled message bubble for the chat.
-
-    Args:
-        message (Message): The message to display.
-
-    Returns:
-        ft.Container: A styled container with the message.
-    """
-    alignment = ft.CrossAxisAlignment.END if message.is_user else ft.CrossAxisAlignment.START
-    bg_color = ft.Colors.BLUE_400 if message.is_user else ft.Colors.GREY_300
-    text_color = ft.Colors.WHITE if message.is_user else ft.Colors.BLACK
-
-    return ft.Container(
-        content=ft.Column(
-            controls=[
-                ft.Text(
-                    message.name,
-                    size=12,
-                    color=ft.Colors.GREY_600,
-                    weight=ft.FontWeight.BOLD
-                ),
-                ft.Container(
-                    content=ft.SelectionArea(
-                        ft.Text(
-                            message.message,
-                            color=text_color,
-                            size=14,
-                            weight=ft.FontWeight.W_500
-                        ),
-                    ),
-                    padding=ft.padding.all(12),
-                    border_radius=ft.border_radius.all(12),
-                    bgcolor=bg_color,
-                    margin=ft.margin.only(bottom=4)
-
-                ),
-                ft.Text(
-                    message.timestamp,
-                    size=10,
-                    color=ft.Colors.GREY_500
-                )
-            ],
-            horizontal_alignment=alignment,
-            spacing=2
-        ),
-        margin=ft.margin.only(bottom=16),
-        width=float('inf')
-    )
 
 
 def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> ft.View:
@@ -152,6 +101,65 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
                     offset=-1, duration=200)
                 page.update()
 
+    def reconnect_to_ollama(e):
+        """Attempt to reconnect to Ollama service"""
+        reconnect_progress = ft.ProgressRing(
+            width=16,
+            height=16,
+            stroke_width=2,
+            color=ft.Colors.BLUE_400,
+        )
+        e.control.content.controls[0] = reconnect_progress
+        e.control.content.controls[1].value = "Connecting..."
+        page.update()
+
+        # Try to reconnect to Ollama
+        try:
+            initialize_chat_state(chat_state=chat_state)
+            if chat_state.agent is not None:
+                page.open(
+                    ft.SnackBar(
+                        content=ft.Text(
+                            "Successfully connected to Ollama!",
+                            color=ft.Colors.WHITE,
+                        ),
+                        bgcolor=ft.Colors.GREEN_400,
+                        action="OK",
+                    )
+                )
+            else:
+                page.open(
+                    ft.SnackBar(
+                        content=ft.Text(
+                            "Failed to connect to Ollama.",
+                            color=ft.Colors.WHITE,
+                        ),
+                        bgcolor=ft.Colors.RED_400,
+                        action="OK",
+                    )
+                )
+            page.views.clear()
+            page.views.append(create_main_view(page, chat_state, micr_state))
+
+        except Exception as err:
+            page.open(
+                ft.SnackBar(
+                    content=ft.Text(
+                        f"Failed to connect: {str(err)}",
+                        color=ft.Colors.WHITE,
+                    ),
+                    bgcolor=ft.Colors.RED_400,
+                    action="OK",
+                )
+            )
+            e.control.content.controls[0] = ft.Icon(
+                name=ft.Icons.REFRESH_ROUNDED,
+                color=ft.Colors.WHITE,
+            )
+            e.control.content.controls[1].value = "Reconnect to Ollama"
+
+        page.update()
+
     voice_recognition = VoiceRecognition(
         on_transcribe_callback=process_voice_input
     )
@@ -177,21 +185,69 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
 
     # Create model dropdown
     if not available_models:
-        model_switch_dropdown = ft.Column(
-            controls=[
-                ft.Text(
-                    "No models available. Please check Ollama models installation",
-                    color=ft.Colors.RED_400,
-                    size=14
-                ),
-                ft.Text(
-                    "Please ensure that Ollama is running.",
-                    color=ft.Colors.RED_400,
-                    size=14
-                )
-            ]
+        model_switch_dropdown = ft.Container(
+            content=ft.Column(
+                controls=[
+                    ft.Row(
+                        controls=[
+                            ft.Icon(
+                                name=ft.Icons.ERROR_OUTLINE,
+                                color=ft.Colors.RED_400,
+                                size=24,
+                            ),
+                            ft.Text(
+                                "Connection to Ollama failed",
+                                color=ft.Colors.RED_400,
+                                size=16,
+                                weight=ft.FontWeight.BOLD
+                            ),
+                        ],
+                        alignment=ft.MainAxisAlignment.CENTER,
+                    ),
+                    ft.Text(
+                        "Please ensure that Ollama service is running",
+                        color=ft.Colors.GREY_400,
+                        size=14,
+                        text_align=ft.TextAlign.CENTER,
+                    ),
+                    ft.Container(
+                        content=ft.ElevatedButton(
+                            content=ft.Row(
+                                controls=[
+                                    ft.Icon(
+                                        name=ft.Icons.REFRESH_ROUNDED,
+                                        color=ft.Colors.WHITE,
+                                    ),
+                                    ft.Text(
+                                        "Reconnect to Ollama",
+                                        color=ft.Colors.WHITE,
+                                    ),
+                                ],
+                                alignment=ft.MainAxisAlignment.CENTER,
+                                spacing=8,
+                            ),
+                            style=ft.ButtonStyle(
+                                bgcolor=ft.Colors.BLUE_600,
+                                shape=ft.RoundedRectangleBorder(radius=8),
+                            ),
+                            on_click=lambda e: reconnect_to_ollama(e),
+                            height=45,
+                        ),
+                        margin=ft.margin.only(top=10),
+                    ),
+                ],
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                spacing=8,
+                expand=True,
+                width=float('inf'),
+            ),
+            padding=ft.padding.all(20),
+            border=ft.border.all(1, ft.Colors.RED_400),
+            border_radius=ft.border_radius.all(12),
+            bgcolor=ft.Colors.with_opacity(0.1, ft.Colors.RED_400),
+            expand=True,
+            width=float('inf'),
         )
-
     else:
         model_switch_dropdown = ft.Dropdown(
             options=[
@@ -273,7 +329,7 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
                 ft.Row(
                     controls=[
                         ft.Image(
-                            src=r"src\app\sloth_5980972.png",
+                            src=r"src\assets\sloth_5980972.png",
                             width=50,
                             height=50,
                             color=ft.Colors.BLUE_600,

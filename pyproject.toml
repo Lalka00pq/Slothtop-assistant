@@ -1,6 +1,6 @@
 [project]
 name = "ai-voice-assistant"
-version = "0.2.0"
+version = "0.2.1"
 description = "This is an AI voice assistant application"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -15,8 +15,11 @@ dependencies = [
     "langchain-community>=0.3.26",
     "langchain-ollama>=0.3.3",
     "langchain-tavily>=0.2.10",
+    "ollama>=0.5.1",
     "psutil>=7.0.0",
     "pydantic>=2.11.7",
+    "pyinstaller>=6.15.0",
+    "pywin32>=310",
     "scipy>=1.15.3",
     "sounddevice>=0.5.2",
     "torch>=2.7.1",

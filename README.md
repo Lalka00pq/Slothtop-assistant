@@ -30,11 +30,11 @@ This is the project of AI assistant Slothtop. You can chat with him and he will 
 >New tools will be added in the future 
 
 ## 🔎Tech Stack
-**Python 3.12** 
-**Langchain 0.3.26**
-**Ollama** 
-**Flet 0.28.3**  
-**Tavily API**
+- **Python 3.12** 
+- **Langchain 0.3.26**
+- **Ollama** 
+- **Flet 0.28.3**  
+- **Tavily API**
 ## 🚀 Getting started locally
 ### Prerequisites
 - **pip** >=24.2
@@ -80,11 +80,7 @@ or
 ```env
 TAVILY_API_KEY=your-api-key
 ```
-8) In .env file you should setup your Ollama url (Only if you have changed Ollama port from default 11434)
-```env
-OLLAMA_API_URL=http://localhost:11434
-```
-9) Run the project
+8) Run the project
 ```bash
   python main.py
 ```
