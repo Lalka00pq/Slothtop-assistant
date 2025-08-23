@@ -3,7 +3,7 @@ from typing import Optional
 import json
 import requests
 # project
-from src.tools.tools import open_app_tool, close_app_tool, turn_off_pc_tool, restart_pc_tool
+from src.tools.tools import open_app_tool, close_app_tool, turn_off_pc_tool, restart_pc_tool, get_weather_tool
 from src.tools.monitoring_tools.monitoring_tool import start_monitoring_cpu_tool, stop_monitoring_cpu_tool, start_monitoring_gpu_tool, stop_monitoring_gpu_tool
 from src.tools.web_work_tools import tavily_web_search_tool
 from src.schemas.schemas import Settings
@@ -59,7 +59,8 @@ class SlothAgent:
             start_monitoring_cpu_tool,
             stop_monitoring_cpu_tool,
             start_monitoring_gpu_tool,
-            stop_monitoring_gpu_tool
+            stop_monitoring_gpu_tool,
+            get_weather_tool
         ]
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", config.user_settings.agent_settings.prompt),
