@@ -69,7 +69,12 @@ def create_settings_view(page: ft.Page, chat_state: ChatState) -> ft.View:
         width=400,
     )
 
-    def save_name(e):
+    def save_name(e) -> None:
+        """Save the new assistant name to the agent.
+
+        Args:
+            e : The event triggered by the button click.
+        """
         if chat_state.agent and name_field.value and name_field.value.strip():
             chat_state.agent.change_prompt(
                 name=name_field.value.strip(), new_prompt=current_prompt)
@@ -80,7 +85,12 @@ def create_settings_view(page: ft.Page, chat_state: ChatState) -> ft.View:
             name_field.value = ""
             page.update()
 
-    def set_default_name(e):
+    def set_default_name(e) -> None:
+        """Set the default assistant name.
+
+        Args:
+            e : The event triggered by the button click.
+        """
         if chat_state.agent:
             chat_state.agent.change_prompt(
                 name=default_assistant_name, new_prompt=current_prompt)
@@ -88,7 +98,7 @@ def create_settings_view(page: ft.Page, chat_state: ChatState) -> ft.View:
             page.open(save_name_message)
             page.update()
 
-    def save_prompt(e):
+    def save_prompt(e) -> None:
         """Save the new prompt to the agent.
 
         Args:
@@ -103,8 +113,12 @@ def create_settings_view(page: ft.Page, chat_state: ChatState) -> ft.View:
             prompt_field.value = ""
             page.update()
 
-    def set_default_prompt(e):
-        """Set the default prompt for the agent."""
+    def set_default_prompt(e) -> None:
+        """Set the default prompt for the agent.
+
+        Args:
+            e : The event triggered by the button click.
+        """
         if chat_state.agent:
             chat_state.agent.change_prompt(default_prompt)
             prompt_text.value = default_prompt

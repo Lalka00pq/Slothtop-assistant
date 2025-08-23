@@ -69,8 +69,12 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
         behavior=ft.SnackBarBehavior.FLOATING,
     )
 
-    def process_voice_input(transcribed_text: str):
-        """Voice input processing"""
+    def process_voice_input(transcribed_text: str) -> None:
+        """Process the transcribed voice input.
+
+        Args:
+            transcribed_text (str): The transcribed voice input text.
+        """
         if chat_state.agent is not None:
             user_message = Message(
                 name="You",
@@ -101,8 +105,12 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
                     offset=-1, duration=200)
                 page.update()
 
-    def reconnect_to_ollama(e):
-        """Attempt to reconnect to Ollama service"""
+    def reconnect_to_ollama(e) -> None:
+        """Attempt to reconnect to Ollama service.
+
+        Args:
+            e : The event triggered by the button click.
+        """
         reconnect_progress = ft.ProgressRing(
             width=16,
             height=16,
@@ -164,8 +172,12 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
         on_transcribe_callback=process_voice_input
     )
 
-    def change_microphone_state(e):
-        """Toggle the microphone state."""
+    def change_microphone_state(e) -> None:
+        """Toggle the microphone state.
+
+        Args:
+            e : The event triggered by the button click.
+        """
         nonlocal micr_state
         if micr_state:
             microphone_button.icon = ft.Icons.MIC_OFF
@@ -260,8 +272,12 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
             value=chat_state.current_model
         )
 
-    def send_message(e):
-        """Send a message to the chat."""
+    def send_message(e) -> None:
+        """Send a message to the chat.
+
+        Args:
+            e : The event triggered by the button click.
+        """
         if (input_field.value and input_field.value.strip() and chat_state.agent is not None):
             # Create and save user message
             user_message = Message(
@@ -301,8 +317,12 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
                         offset=-1, duration=200)
                     page.update()
 
-    def model_switch(e):
-        """Switch the model used by the SlothAgent."""
+    def model_switch(e) -> None:
+        """Switch the model used by the SlothAgent.
+
+        Args:
+            e : The event triggered by the dropdown change.
+        """
         new_model = str(e.control.value)
         if chat_state.agent:
             chat_state.agent.change_llm(new_llm=new_model)

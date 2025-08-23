@@ -123,7 +123,9 @@ class SlothAgent:
             memory=self.memory
         )
 
-    def change_prompt(self, new_prompt: str, name: str = config.user_settings.agent_settings.name) -> None:
+    def change_prompt(self,
+                      new_prompt: str,
+                      name: str = config.user_settings.agent_settings.name) -> None:
         """Change the prompt used by the agent.
 
         Args:

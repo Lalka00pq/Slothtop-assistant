@@ -13,7 +13,7 @@ config = Settings.from_json_file('src/app/settings.json')
 micr_state = False
 
 
-def on_route_change(e):
+def on_route_change(e) -> None:
     """Handle route changes between views.
 
     Args:
@@ -30,7 +30,7 @@ def on_route_change(e):
     page.update()
 
 
-def app_page(page: ft.Page):
+def app_page(page: ft.Page) -> None:
     """Create the main application page."""
     # Basic page setup
     page.title = "AI Voice Assistant"
