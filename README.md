@@ -4,7 +4,7 @@
 </p>
 
 >[!important] 
->New update is here!!!. In 0.2.0v was added voice recognition. Now you can use your voice to interact with assistant!
+>New update is here!!!. In 0.2.2v was added voice recognition. Now you can use your voice to interact with assistant!
 
 >[!warning] 
 >**Project isn't ready yet**, this is only the demo version. The project may contain bugs and critical errors.
@@ -20,11 +20,12 @@ This is the project of AI assistant Slothtop. You can chat with him and he will 
 >If you want, you can take and use this project as a template for your own AI assistants. 
 ### 🛠Tools:
 
-- Web-search (Tavily API)
-- Turn off your PC
-- Restart your PC
-- Show you the CPU and GPU monitoring pages
-- Open and close apps on your PC
+- Web-search (Tavily API) (example: Can you find information about sloths)
+- Turn off your PC (example: Can you turn off my PC)
+- Restart your PC (example: Can you restart my PC)
+- Show you the CPU and GPU monitoring pages (example: Start CPU monitoring/Start GPU monitoring)
+- Open and close apps on your PC (example: Can you open Obsidian/Firefox and etc, Can you close Obsidian/Firefox and etc)
+- Show the weather in cities (Tomorrow API) (example: Show me the weather in New York)
 ****
 >[!note] 
 >New tools will be added in the future 
@@ -35,6 +36,7 @@ This is the project of AI assistant Slothtop. You can chat with him and he will 
 - **Ollama** 
 - **Flet 0.28.3**  
 - **Tavily API**
+- **Tomorrow API**
 ## 🚀 Getting started locally
 ### Prerequisites
 - **pip** >=24.2
@@ -74,13 +76,14 @@ or
 ```bash
   uv sync
 ```
-6) Go to [Tavily](https://www.tavily.com/) and set up your API key if you don't have it
-
-7) In the project directory set up your API key in .env_example file (you should rename it to .env)
+6) Go to [Tavily](https://www.tavily.com/) and get your API key if you don't have it
+7) Go to [Tomorrow](https://www.tomorrow.io/) and get your API key if you don't have it
+8) In the project directory set up your API key in .env_example file (you should rename it to .env)
 ```env
 TAVILY_API_KEY=your-api-key
+TOMORROW_API_KEY=your-api-key
 ```
-8) Run the project
+9) Run the project
 ```bash
   python main.py
 ```
@@ -88,8 +91,10 @@ or
 ```bash
   uv run main.py
 ```
+## Settings 
+You can change prompt or assistant's name in the settings of the app.
 ## 📸Screenshots
 <p align="center">
-   <center><img src='screenshots/Screen1.png'></center>
-   <center><img src='screenshots/Screenshot2.png'></center>
+   <center><img src='screenshots/Main_page.png'></center>
+   <center><img src='screenshots/Settings_page.png'></center>
 </p>

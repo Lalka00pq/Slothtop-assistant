@@ -1,8 +1,13 @@
 # python
 import os
+import requests
 # 3rd party
-from AppOpener import open as open_app, close as close_app  # type: ignore
-from langchain.tools import tool  # type: ignore
+from AppOpener import open as open_app, close as close_app
+from langchain.tools import tool
+from dotenv import load_dotenv
+load_dotenv()
+
+TOMORROW_API_KEY = os.getenv("TOMORROW_API_KEY")
 
 
 @tool
@@ -68,3 +73,29 @@ def close_app_tool(app: str) -> str:
         return f'{app} closed successfully.'
     except Exception as e:
         return f"Error closing {app}: {e}"
+
+
+@tool
+def get_weather_tool(location: str) -> str:
+    """Tool for getting the weather information.
+
+    Args:
+        location (str): The location to get the weather for.
+    Returns:
+        str: A message indicating the result of the operation.
+    """
+    try:
+        headers = {
+            "accept": "application/json"
+        }
+        response = requests.get(
+            f"https://api.tomorrow.io/v4/weather/realtime?location={location.lower()}&apikey={TOMORROW_API_KEY}",
+            headers=headers
+        )
+        data = response.json()
+        return f"Current weather in {location}:\n" \
+            f"Temperature: {data['data']['values']['temperature']}°C,\n" \
+            f"Temperature Apparent: {data['data']['values']['temperatureApparent']}°C,\n" \
+            f"Humidity: {data['data']['values']['humidity']}%,"
+    except Exception as e:
+        return f"Error getting weather for {location}: {e}"

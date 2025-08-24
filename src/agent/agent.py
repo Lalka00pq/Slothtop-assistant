@@ -3,7 +3,7 @@ from typing import Optional
 import json
 import requests
 # project
-from src.tools.tools import open_app_tool, close_app_tool, turn_off_pc_tool, restart_pc_tool
+from src.tools.tools import open_app_tool, close_app_tool, turn_off_pc_tool, restart_pc_tool, get_weather_tool
 from src.tools.monitoring_tools.monitoring_tool import start_monitoring_cpu_tool, stop_monitoring_cpu_tool, start_monitoring_gpu_tool, stop_monitoring_gpu_tool
 from src.tools.web_work_tools import tavily_web_search_tool
 from src.schemas.schemas import Settings
@@ -59,10 +59,12 @@ class SlothAgent:
             start_monitoring_cpu_tool,
             stop_monitoring_cpu_tool,
             start_monitoring_gpu_tool,
-            stop_monitoring_gpu_tool
+            stop_monitoring_gpu_tool,
+            get_weather_tool
         ]
         self.prompt = ChatPromptTemplate.from_messages([
-            ("system", config.user_settings.agent_settings.prompt),
+            ("system", '''Your name is {agent_settings.name}. {agent_settings.prompt}'''.format(
+                agent_settings=config.user_settings.agent_settings)),
             MessagesPlaceholder(variable_name="chat_history"),
             ("human", "{input}"),
             ("placeholder", "{agent_scratchpad}"),
@@ -121,14 +123,17 @@ class SlothAgent:
             memory=self.memory
         )
 
-    def change_prompt(self, new_prompt: str) -> None:
+    def change_prompt(self,
+                      new_prompt: str,
+                      name: str = config.user_settings.agent_settings.name) -> None:
         """Change the prompt used by the agent.
 
         Args:
             new_prompt (str): The new prompt to use.
         """
         self.prompt = ChatPromptTemplate.from_messages([
-            ("system", new_prompt),
+            ("system", '''Your name is {name}. {new_prompt}'''.format(
+                new_prompt=new_prompt, name=name)),
             MessagesPlaceholder(variable_name="chat_history"),
             ("human", "{input}"),
             ("placeholder", "{agent_scratchpad}"),
@@ -136,6 +141,7 @@ class SlothAgent:
         with open('src/app/settings.json', 'r+', encoding='utf-8') as file:
             config = json.load(file)
             config['user_settings']['agent_settings']['prompt'] = new_prompt
+            config['user_settings']['agent_settings']['name'] = name
             file.seek(0)
             json.dump(config, file, indent=4, ensure_ascii=False)
             file.truncate()
