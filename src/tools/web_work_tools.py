@@ -6,7 +6,6 @@ from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_tavily import TavilySearch
 import webbrowser
 
-
 load_dotenv()
 
 TAVILY_API_KEY = os.getenv('TAVILY_API_KEY')
