@@ -1,6 +1,6 @@
 [project]
 name = "ai-voice-assistant"
-version = "0.2.1"
+version = "0.2.2"
 description = "This is an AI voice assistant application"
 readme = "README.md"
 requires-python = ">=3.12"
