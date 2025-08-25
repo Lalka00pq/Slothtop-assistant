@@ -9,7 +9,7 @@ from src.tools.web_work_tools import tavily_web_search_tool
 from src.schemas.schemas import Settings
 # 3rd party
 from langchain_ollama.chat_models import ChatOllama as OllamaLLM
-from langchain.agents import create_tool_calling_agent, AgentExecutor
+from langchain.agents import create_tool_calling_agent, AgentExecutor, ConversationalAgent
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.tools import BaseTool
 from langchain.memory import ConversationBufferMemory
@@ -56,11 +56,11 @@ class SlothAgent:
             turn_off_pc_tool,
             restart_pc_tool,
             tavily_web_search_tool,
-            start_monitoring_cpu_tool,
-            stop_monitoring_cpu_tool,
-            start_monitoring_gpu_tool,
-            stop_monitoring_gpu_tool,
-            get_weather_tool
+            # start_monitoring_cpu_tool,
+            # stop_monitoring_cpu_tool,
+            # start_monitoring_gpu_tool,
+            # stop_monitoring_gpu_tool,
+            get_weather_tool,
         ]
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", '''Your name is {agent_settings.name}. {agent_settings.prompt}'''.format(
@@ -73,10 +73,10 @@ class SlothAgent:
             raise Exception(
                 "Ollama server is not running. Please check if Ollama server is running.")
         self.llm = OllamaLLM(model=llm)
-        self.agent = create_tool_calling_agent(
+        self.agent = ConversationalAgent.from_llm_and_tools(
             llm=self.llm,
             tools=self.tools,
-            prompt=self.prompt,
+            prompt=self.prompt
         )
         self.memory = ConversationBufferMemory(
             memory_key="chat_history",
@@ -87,7 +87,8 @@ class SlothAgent:
             agent=self.agent,
             tools=self.tools,
             verbose=True,
-            memory=self.memory
+            memory=self.memory,
+            handle_parsing_errors=True
         )
 
     def invoke_agent(self, query: str) -> dict:
@@ -111,7 +112,7 @@ class SlothAgent:
             self.llm = OllamaLLM(model=new_llm)
         except Exception as e:
             print(f"Error changing LLM: {e} - using default LLM.")
-        self.agent = create_tool_calling_agent(
+        self.agent = ConversationalAgent.from_llm_and_tools(
             llm=self.llm,
             tools=self.tools,
             prompt=self.prompt
@@ -120,7 +121,8 @@ class SlothAgent:
             agent=self.agent,
             tools=self.tools,
             verbose=True,
-            memory=self.memory
+            memory=self.memory,
+            handle_parsing_errors=True
         )
 
     def change_prompt(self,
@@ -146,7 +148,7 @@ class SlothAgent:
             json.dump(config, file, indent=4, ensure_ascii=False)
             file.truncate()
 
-        self.agent = create_tool_calling_agent(
+        self.agent = ConversationalAgent.from_llm_and_tools(
             llm=self.llm,
             tools=self.tools,
             prompt=self.prompt
@@ -155,5 +157,6 @@ class SlothAgent:
             agent=self.agent,
             tools=self.tools,
             verbose=True,
-            memory=self.memory
+            memory=self.memory,
+            handle_parsing_errors=True
         )
