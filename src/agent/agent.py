@@ -159,7 +159,7 @@ Remember:
         response = self.agent_executor.invoke({
             "input": enhanced_query,
             "name": self.agent_name
-        })        # Извлекаем процесс мышления из логов агента
+        })
         if isinstance(response, dict) and 'intermediate_steps' in response:
             for step in response['intermediate_steps']:
                 if isinstance(step, tuple) and len(step) >= 2:
@@ -206,7 +206,6 @@ Remember:
         """
         self.agent_name = new_name
 
-        # Обновляем промпт с новым именем
         PREFIX = f"""You are {self.agent_name}. This is your name and identity. You should always:
 1. Remember that your name is {self.agent_name}
 2. Refer to yourself as {self.agent_name}

@@ -8,7 +8,6 @@ from src.schemas.schemas import Settings
 
 # settings
 config = Settings.from_json_file('src/app/settings.json')
-# 3rd party
 
 
 def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> ft.View:
