@@ -76,8 +76,8 @@ def create_settings_view(page: ft.Page, chat_state: ChatState) -> ft.View:
             e : The event triggered by the button click.
         """
         if chat_state.agent and name_field.value and name_field.value.strip():
-            chat_state.agent.change_prompt(
-                name=name_field.value.strip(), new_prompt=current_prompt)
+            chat_state.agent.change_name(
+                new_name=name_field.value.strip())
             page.open(save_name_message)
             nonlocal current_assistant_name
             current_assistant_name = name_field.value.strip()

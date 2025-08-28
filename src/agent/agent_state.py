@@ -25,8 +25,8 @@ def create_message_bubble(message: Message) -> ft.Container:
             controls=[
                 ft.Text(
                     message.name,
-                    size=12,
-                    color=ft.Colors.GREY_600,
+                    size=16,
+                    color=ft.Colors.WHITE54,
                     weight=ft.FontWeight.BOLD
                 ),
                 ft.Container(
