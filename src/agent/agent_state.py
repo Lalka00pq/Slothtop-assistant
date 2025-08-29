@@ -83,7 +83,6 @@ def initialize_chat_state(chat_state: ChatState):
             print(f"Error fetching available models: {e}")
             chat_state.agent = None
             chat_state.current_model = ""
-        # Initialize agent
 
         # Initialize chat container
         chat_state.chat_container = ft.Column(

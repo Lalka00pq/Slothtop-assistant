@@ -377,7 +377,7 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
                                 "Image not found", color=ft.Colors.RED_400),
                         ),
                         ft.Text(
-                            "Slothtop Assistant",
+                            "Slothy Assistant",
                             size=24,
                             weight=ft.FontWeight.BOLD,
                             color=ft.Colors.WHITE
