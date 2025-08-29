@@ -12,6 +12,79 @@ def create_settings_view(page: ft.Page, chat_state: ChatState) -> ft.View:
         ft.View: The settings view
     """
     config = Settings.from_json_file('src/app/settings.json')
+    saved_bar = ft.SnackBar(
+        content=ft.Text("Saved",
+                        color=ft.Colors.WHITE),
+        bgcolor=ft.Colors.GREEN
+    )
+    error_bar = ft.SnackBar(
+        content=ft.Text("Failed to save",
+                        color=ft.Colors.WHITE,
+                        ),
+        bgcolor=ft.Colors.RED,
+
+    )
+    # Temperature update
+
+    def update_temperature(value):
+        if chat_state.agent:
+            chat_state.agent.change_temperature(value)
+            nonlocal temperature_bar
+            temperature_bar.value = value
+            page.open(saved_bar)
+            page.update()
+        else:
+            page.open(error_bar)
+
+    temperature_bar = ft.Slider(
+        min=0.0,
+        max=1.0,
+        value=config.user_settings.agent_settings.temperature,
+        divisions=10,
+        round=1,
+        label="Temperature: {value}",
+        on_change=lambda e: update_temperature(e.control.value)
+    )
+    # Top-k update
+
+    def top_k_update(value):
+        if chat_state.agent:
+            chat_state.agent.change_top_k(value)
+            nonlocal top_k_bar
+            top_k_bar.value = value
+            page.open(saved_bar)
+            page.update()
+        else:
+            page.open(error_bar)
+
+    top_k_bar = ft.Slider(
+        min=1,
+        max=100,
+        value=config.user_settings.agent_settings.top_k,
+        divisions=99,
+        label="Top-k: {value}",
+        on_change=lambda e: top_k_update(e.control.value)
+    )
+
+    def top_p_update(value):
+        if chat_state.agent:
+            chat_state.agent.change_top_p(value)
+            nonlocal top_p_bar
+            top_p_bar.value = value
+            page.open(saved_bar)
+            page.update()
+        else:
+            page.open(error_bar)
+
+    top_p_bar = ft.Slider(
+        min=0,
+        max=1,
+        value=config.user_settings.agent_settings.top_p,
+        divisions=10,
+        round=1,
+        label="Top-p: {value}",
+        on_change=lambda e: top_p_update(e.control.value)
+    )
 
     # Header with back button
     header = ft.Row(
@@ -31,6 +104,7 @@ def create_settings_view(page: ft.Page, chat_state: ChatState) -> ft.View:
         alignment=ft.MainAxisAlignment.START
     )
 
+    # Settings content
     settings_content = ft.Container(
         content=ft.Column(
             controls=[
@@ -62,55 +136,36 @@ def create_settings_view(page: ft.Page, chat_state: ChatState) -> ft.View:
                             ft.Text("Models settings:", size=20,
                                     color=ft.Colors.WHITE,
                                     weight=ft.FontWeight.BOLD),
-
-                            # Assistant name
+                            # Settings
                             ft.Column(
                                 controls=[
+                                    # Temperature
                                     ft.Row(
                                         controls=[
-                                            ft.Text("Assistant name:", size=14,
+                                            ft.Text("Model temperature:", size=14,
                                                     color=ft.Colors.WHITE,
                                                     weight=ft.FontWeight.BOLD),
-
-                                        ]
-                                    ),
-                                    ft.Row(
-                                        controls=[
-
-                                            ft.ElevatedButton(
-                                                text="Save",
-                                                bgcolor=ft.Colors.BLUE_600,
-                                                color=ft.Colors.WHITE,
-                                                width=60,
-                                                height=40,
-                                                on_click=lambda _: None
-                                            )
+                                            temperature_bar,
                                         ]
                                     ),
                                 ]
                             ),
-
-                            # Prompt settings
                             ft.Column(
                                 controls=[
                                     ft.Text(
-                                        "Current prompt:",
+                                        "Model top_k parameter:",
                                         size=14,
                                         color=ft.Colors.WHITE,
                                         weight=ft.FontWeight.BOLD
                                     ),
-                                ]
-                            ),
-                            ft.Row(
-                                controls=[
-                                    ft.ElevatedButton(
-                                        text="Save",
-                                        bgcolor=ft.Colors.BLUE_600,
+                                    top_k_bar,
+                                    ft.Text(
+                                        "Model top_p parameter:",
+                                        size=14,
                                         color=ft.Colors.WHITE,
-                                        width=60,
-                                        height=40,
-                                        on_click=lambda _: None
-                                    )
+                                        weight=ft.FontWeight.BOLD
+                                    ),
+                                    top_p_bar,
                                 ]
                             ),
                         ],

@@ -4,9 +4,12 @@
             "theme": "dark"
         },
         "agent_settings": {
-            "name": "Slothy",
-            "prompt": "You are a helpful assistant. Use the tools only if it's necessary (for example, if the user asks to open an application, you should use tools, but if the user asks a general question (for example, how are you), you can answer without using tools).",
-            "model": "llama3.2"
+            "temperature": 1.0,
+            "default_model": "llama3.2",
+            "length_context": 1024,
+            "top_k": 22.0,
+            "top_p": 0.8,
+            "max_iterations": 3
         }
     },
     "default_settings": {
@@ -14,9 +17,12 @@
             "theme": "dark"
         },
         "agent_settings": {
-            "name": "Sloth",
-            "prompt": "You are a helpful assistant. Use the tools only if it's necessary (for example, if the user asks to open an application, you should use tools, but if the user asks a general question (for example, how are you), you can answer without using tools).",
-            "model": "llama3.2"
+            "temperature": 0.7,
+            "default_model": "llama3.2",
+            "length_context": 1024,
+            "top_k": 40,
+            "top_p": 0.95,
+            "max_iterations": 3
         }
     }
 }

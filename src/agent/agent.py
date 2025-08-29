@@ -1,6 +1,7 @@
 # python
 from typing import Optional
 import requests
+import json
 # project
 from src.tools.tools import open_app_tool, close_app_tool, turn_off_pc_tool, restart_pc_tool, get_weather_tool
 from src.tools.monitoring_tools.monitoring_tool import start_monitoring_cpu_tool, stop_monitoring_cpu_tool, start_monitoring_gpu_tool, stop_monitoring_gpu_tool
@@ -35,7 +36,7 @@ class SlothAgent:
             print(f"Unexpected error checking Ollama connection: {e}")
             return False
 
-    def __init__(self, llm: str = config.user_settings.agent_settings.model,
+    def __init__(self, llm: str = config.user_settings.agent_settings.default_model,
                  tools_list: Optional[list[BaseTool]] = None):
         """Initialize the SlothAgent with a language model and a list of tools.
 
@@ -59,7 +60,7 @@ class SlothAgent:
             # stop_monitoring_gpu_tool,
             get_weather_tool,
         ]
-        self.agent_name = config.user_settings.agent_settings.name
+        self.agent_name = "Slothy"
 
         PREFIX = f"""You are {self.agent_name}. This is your name and identity. You should always:
 1. Remember that your name is {self.agent_name}
@@ -121,8 +122,9 @@ Remember:
                 "Ollama server is not running. Please check if Ollama server is running.")
 
         self.llm = OllamaLLM(model=llm,
-                             temperature=0.7,
-                             top_p=0.95)
+                             temperature=config.user_settings.agent_settings.temperature,
+                             top_k=config.user_settings.agent_settings.top_k,
+                             top_p=config.user_settings.agent_settings.top_p)
         self.agent = ConversationalAgent.from_llm_and_tools(
             llm=self.llm,
             tools=self.tools
@@ -177,9 +179,99 @@ Remember:
             new_llm (str): The new language model to use.
         """
         try:
-            self.llm = OllamaLLM(model=new_llm)
+            self.llm = OllamaLLM(model=new_llm,
+                                 temperature=config.user_settings.agent_settings.temperature,
+                                 top_k=config.user_settings.agent_settings.top_k,
+                                 top_p=config.user_settings.agent_settings.top_p)
         except Exception as e:
             print(f"Error changing LLM: {e} - using default LLM.")
+
+        self.agent = ConversationalAgent.from_llm_and_tools(
+            llm=self.llm,
+            tools=self.tools,
+            prompt=self.prompt.partial(
+                name=self.agent_name)
+        )
+        self.agent_executor = AgentExecutor.from_agent_and_tools(
+            agent=self.agent,
+            tools=self.tools,
+            verbose=True,
+            memory=self.memory,
+            handle_parsing_errors=True
+        )
+
+    def change_temperature(self, new_temperature: float) -> None:
+        """Change the temperature setting of the language model.
+
+        Args:
+            new_temperature (float): The new temperature value to set.
+        """
+        with open("src/app/settings.json", "r+", encoding='utf-8') as file:
+            settings = json.load(file)
+            settings["user_settings"]["agent_settings"]["temperature"] = new_temperature
+            file.seek(0)
+            json.dump(settings, file, indent=4, ensure_ascii=False)
+            file.truncate()
+
+        self.llm.temperature = new_temperature
+
+        self.agent = ConversationalAgent.from_llm_and_tools(
+            llm=self.llm,
+            tools=self.tools,
+            prompt=self.prompt.partial(
+                name=self.agent_name)
+        )
+        self.agent_executor = AgentExecutor.from_agent_and_tools(
+            agent=self.agent,
+            tools=self.tools,
+            verbose=True,
+            memory=self.memory,
+            handle_parsing_errors=True
+        )
+
+    def change_top_k(self, value: int) -> None:
+        """Change the top_k setting of the language model.
+
+        Args:
+            new_top_k (int): The new top_k value to set.
+        """
+        with open("src/app/settings.json", "r+", encoding='utf-8') as file:
+            settings = json.load(file)
+            settings["user_settings"]["agent_settings"]["top_k"] = value
+            file.seek(0)
+            json.dump(settings, file, indent=4, ensure_ascii=False)
+            file.truncate()
+
+        self.llm.top_k = value
+
+        self.agent = ConversationalAgent.from_llm_and_tools(
+            llm=self.llm,
+            tools=self.tools,
+            prompt=self.prompt.partial(
+                name=self.agent_name)
+        )
+        self.agent_executor = AgentExecutor.from_agent_and_tools(
+            agent=self.agent,
+            tools=self.tools,
+            verbose=True,
+            memory=self.memory,
+            handle_parsing_errors=True
+        )
+
+    def change_top_p(self, value: float) -> None:
+        """Change the top_p setting of the language model.
+
+        Args:
+            new_top_p (float): The new top_p value to set.
+        """
+        with open("src/app/settings.json", "r+", encoding='utf-8') as file:
+            settings = json.load(file)
+            settings["user_settings"]["agent_settings"]["top_p"] = value
+            file.seek(0)
+            json.dump(settings, file, indent=4, ensure_ascii=False)
+            file.truncate()
+
+        self.llm.top_p = value
 
         self.agent = ConversationalAgent.from_llm_and_tools(
             llm=self.llm,

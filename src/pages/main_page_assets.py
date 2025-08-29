@@ -94,7 +94,7 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
                 page.update()
 
             ai_message = Message(
-                name=config.user_settings.agent_settings.name,
+                name="Slothy",
                 message=chat_state.agent.invoke_agent(
                     transcribed_text)["output"],
                 is_user=False
@@ -300,7 +300,7 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
                 page.update()
 
             thinking_message = Message(
-                name=config.user_settings.agent_settings.name,
+                name="Slothy",
                 message="🦥 Thinking...",
                 is_user=False
             )
@@ -320,7 +320,7 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
                         page.update()
 
                 ai_message = Message(
-                    name=config.user_settings.agent_settings.name,
+                    name="Slothy",
                     message=response["output"],
                     is_user=False
                 )
