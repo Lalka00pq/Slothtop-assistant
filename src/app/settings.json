@@ -4,11 +4,11 @@
             "theme": "dark"
         },
         "agent_settings": {
-            "temperature": 1.0,
+            "temperature": 0.8,
             "default_model": "llama3.2",
             "length_context": 1024,
-            "top_k": 22.0,
-            "top_p": 0.8,
+            "top_k": 57.0,
+            "top_p": 0.7,
             "max_iterations": 3
         }
     },

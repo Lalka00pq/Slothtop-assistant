@@ -47,7 +47,7 @@ def create_settings_view(page: ft.Page, chat_state: ChatState) -> ft.View:
     )
     # Top-k update
 
-    def top_k_update(value):
+    def top_k_update(value: int):
         if chat_state.agent:
             chat_state.agent.change_top_k(value)
             nonlocal top_k_bar
@@ -66,7 +66,12 @@ def create_settings_view(page: ft.Page, chat_state: ChatState) -> ft.View:
         on_change=lambda e: top_k_update(e.control.value)
     )
 
-    def top_p_update(value):
+    def top_p_update(value: float):
+        """Update the top-p value.
+
+        Args:
+            value (float): The new top-p value.
+        """
         if chat_state.agent:
             chat_state.agent.change_top_p(value)
             nonlocal top_p_bar
