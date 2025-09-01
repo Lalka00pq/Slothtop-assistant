@@ -4,8 +4,9 @@
             "theme": "dark"
         },
         "agent_settings": {
-            "temperature": 0.8,
+            "temperature": 0.6,
             "default_model": "llama3.2",
+            "prompt": "You are a helpful assistant, you should use tools to help users with their tasks. You are a tool-using assistant.",
             "length_context": 1024,
             "top_k": 57.0,
             "top_p": 0.7,
@@ -19,6 +20,7 @@
         "agent_settings": {
             "temperature": 0.7,
             "default_model": "llama3.2",
+            "prompt": "You are a helpful assistant, you should use tools to help users with their tasks. You are a tool-using assistant.",
             "length_context": 1024,
             "top_k": 40,
             "top_p": 0.95,
