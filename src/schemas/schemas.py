@@ -14,7 +14,7 @@ class AgentSettings(BaseModel):
     default_model: str = Field(default="llama3.2")
     prompt: str = Field(
         default="You are a helpful assistant, you should use tools to help users with their tasks. If user just chat with you, you should stop this chat and say that you are a tool-using assistant.")
-    length_context: int = Field(default=1024)
+    num_predict: int = Field(default=128)
     top_k: int = Field(default=40)
     top_p: float = Field(default=0.95)
 

@@ -24,18 +24,17 @@ def create_settings_view(page: ft.Page, chat_state: ChatState) -> ft.View:
         bgcolor=ft.Colors.RED,
 
     )
-    # Temperature update
 
-    def update_temperature(value):
+    def update_setting(param: str, value: int | float, bar: ft.Slider) -> None:
         if chat_state.agent:
-            chat_state.agent.change_temperature(value)
-            nonlocal temperature_bar
-            temperature_bar.value = value
+            chat_state.agent.change_settings_params(param, value)
+            bar.value = value
             page.open(saved_bar)
             page.update()
         else:
             page.open(error_bar)
 
+    # Temperature param
     temperature_bar = ft.Slider(
         min=0.0,
         max=1.0,
@@ -43,44 +42,20 @@ def create_settings_view(page: ft.Page, chat_state: ChatState) -> ft.View:
         divisions=10,
         round=1,
         label="Temperature: {value}",
-        on_change=lambda e: update_temperature(e.control.value)
+        on_change=lambda e: update_setting(
+            "temperature", e.control.value, temperature_bar)
     )
-    # Top-k update
-
-    def top_k_update(value: int):
-        if chat_state.agent:
-            chat_state.agent.change_top_k(value)
-            nonlocal top_k_bar
-            top_k_bar.value = value
-            page.open(saved_bar)
-            page.update()
-        else:
-            page.open(error_bar)
-
+    # Top-k param
     top_k_bar = ft.Slider(
         min=1,
         max=100,
         value=config.user_settings.agent_settings.top_k,
         divisions=99,
         label="Top-k: {value}",
-        on_change=lambda e: top_k_update(e.control.value)
+        on_change=lambda e: update_setting(
+            "top_k", int(e.control.value), top_k_bar)
     )
-
-    def top_p_update(value: float):
-        """Update the top-p value.
-
-        Args:
-            value (float): The new top-p value.
-        """
-        if chat_state.agent:
-            chat_state.agent.change_top_p(value)
-            nonlocal top_p_bar
-            top_p_bar.value = value
-            page.open(saved_bar)
-            page.update()
-        else:
-            page.open(error_bar)
-
+    # Top-p param
     top_p_bar = ft.Slider(
         min=0,
         max=1,
@@ -88,7 +63,16 @@ def create_settings_view(page: ft.Page, chat_state: ChatState) -> ft.View:
         divisions=10,
         round=1,
         label="Top-p: {value}",
-        on_change=lambda e: top_p_update(e.control.value)
+        on_change=lambda e: update_setting("top_p", e.control.value, top_p_bar)
+    )
+    # Num predict param
+    num_predict_bar = ft.Slider(
+        min=128,
+        max=1024,
+        value=config.user_settings.agent_settings.num_predict,
+        label="Num predict: {value}",
+        on_change=lambda e: update_setting(
+            "num_predict", int(e.control.value), num_predict_bar)
     )
 
     # Header with back button
@@ -157,6 +141,7 @@ def create_settings_view(page: ft.Page, chat_state: ChatState) -> ft.View:
                             ),
                             ft.Column(
                                 controls=[
+                                    # Top-k
                                     ft.Text(
                                         "Model top_k parameter:",
                                         size=14,
@@ -164,6 +149,7 @@ def create_settings_view(page: ft.Page, chat_state: ChatState) -> ft.View:
                                         weight=ft.FontWeight.BOLD
                                     ),
                                     top_k_bar,
+                                    # Top-p
                                     ft.Text(
                                         "Model top_p parameter:",
                                         size=14,
@@ -171,6 +157,14 @@ def create_settings_view(page: ft.Page, chat_state: ChatState) -> ft.View:
                                         weight=ft.FontWeight.BOLD
                                     ),
                                     top_p_bar,
+                                    # Num predict
+                                    ft.Text(
+                                        "Model num_predict parameter:",
+                                        size=14,
+                                        color=ft.Colors.WHITE,
+                                        weight=ft.FontWeight.BOLD
+                                    ),
+                                    num_predict_bar,
                                 ]
                             ),
                         ],

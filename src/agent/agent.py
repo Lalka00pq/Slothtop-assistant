@@ -1,5 +1,5 @@
 # python
-from typing import Optional
+from typing import List
 import requests
 import json
 # project
@@ -11,9 +11,6 @@ from src.schemas.schemas import Settings
 # 3rd party
 from langchain_ollama.chat_models import ChatOllama as OllamaLLM
 from langchain.agents import AgentExecutor, create_tool_calling_agent
-from langchain_core.tools import BaseTool
-from langchain.prompts import MessagesPlaceholder
-from langchain.memory import ConversationBufferMemory
 import ollama
 # settings
 config = Settings.from_json_file('src/app/settings.json')
@@ -38,8 +35,7 @@ class SlothAgent:
             print(f"Unexpected error checking Ollama connection: {e}")
             return False
 
-    def __init__(self, llm: str = config.user_settings.agent_settings.default_model,
-                 tools_list: Optional[list[BaseTool]] = None):
+    def __init__(self, llm: str = config.user_settings.agent_settings.default_model):
         """Initialize the SlothAgent with a language model and a list of tools.
 
         Args:
@@ -50,7 +46,7 @@ class SlothAgent:
         Returns:
             None: None
         """
-        self.tools = tools_list or [
+        self.tools = [
             open_app_tool,
             close_app_tool,
             turn_off_pc_tool,
@@ -66,7 +62,6 @@ class SlothAgent:
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", '''Your name is Slothy. {agent_settings.prompt}'''.format(
                 agent_settings=config.user_settings.agent_settings)),
-            MessagesPlaceholder(variable_name="chat_history"),
             ("human", "{input}"),
             ("placeholder", "{agent_scratchpad}"),
         ])
@@ -77,24 +72,18 @@ class SlothAgent:
         self.llm = OllamaLLM(model=llm,
                              temperature=config.user_settings.agent_settings.temperature,
                              top_k=config.user_settings.agent_settings.top_k,
-                             top_p=config.user_settings.agent_settings.top_p)
+                             top_p=config.user_settings.agent_settings.top_p,
+                             num_predict=config.user_settings.agent_settings.num_predict)
         self.agent = create_tool_calling_agent(
             llm=self.llm,
             tools=self.tools,
             prompt=self.prompt
         )
-        self.memory = ConversationBufferMemory(
-            memory_key="chat_history",
-            return_messages=True,
-            input_key="input"
-        )
         self.agent_executor = AgentExecutor.from_agent_and_tools(
             agent=self.agent,
             tools=self.tools,
             verbose=True,
-            memory=self.memory,
             handle_parsing_errors=True,
-            max_iterations=3,
         )
 
     def invoke_agent(self, query: str) -> dict:
@@ -122,7 +111,8 @@ class SlothAgent:
             self.llm = OllamaLLM(model=new_llm,
                                  temperature=config.user_settings.agent_settings.temperature,
                                  top_k=config.user_settings.agent_settings.top_k,
-                                 top_p=config.user_settings.agent_settings.top_p)
+                                 top_p=config.user_settings.agent_settings.top_p,
+                                 num_predict=config.user_settings.agent_settings.num_predict)
         except Exception as e:
             print(f"Error changing LLM: {e} - using default LLM.")
 
@@ -135,90 +125,32 @@ class SlothAgent:
             agent=self.agent,
             tools=self.tools,
             verbose=True,
-            memory=self.memory,
             handle_parsing_errors=True
         )
 
-    def change_temperature(self, new_temperature: float) -> None:
-        """Change the temperature setting of the language model.
+    def change_settings_params(self, param: str, value, params: List[str] = ['temperature', 'top_k', 'top_p', 'num_predict']) -> None:
 
-        Args:
-            new_temperature (float): The new temperature value to set.
-        """
-        with open("src/app/settings.json", "r+", encoding='utf-8') as file:
-            settings = json.load(file)
-            settings["user_settings"]["agent_settings"]["temperature"] = new_temperature
-            file.seek(0)
-            json.dump(settings, file, indent=4, ensure_ascii=False)
-            file.truncate()
+        if param in params:
+            with open("src/app/settings.json", "r+", encoding='utf-8') as file:
+                settings = json.load(file)
+                settings["user_settings"]["agent_settings"][param] = value
+                file.seek(0)
+                json.dump(settings, file, indent=4, ensure_ascii=False)
+                file.truncate()
 
-        self.llm.temperature = new_temperature
+            setattr(self.llm, param, value)
 
-        self.agent = create_tool_calling_agent(
-            llm=self.llm,
-            tools=self.tools,
-            prompt=self.prompt
-        )
-        self.agent_executor = AgentExecutor.from_agent_and_tools(
-            agent=self.agent,
-            tools=self.tools,
-            verbose=True,
-            memory=self.memory,
-            handle_parsing_errors=True
-        )
-
-    def change_top_k(self, value: int) -> None:
-        """Change the top_k setting of the language model.
-
-        Args:
-            new_top_k (int): The new top_k value to set.
-        """
-        with open("src/app/settings.json", "r+", encoding='utf-8') as file:
-            settings = json.load(file)
-            settings["user_settings"]["agent_settings"]["top_k"] = value
-            file.seek(0)
-            json.dump(settings, file, indent=4, ensure_ascii=False)
-            file.truncate()
-
-        self.llm.top_k = value
-
-        self.agent = create_tool_calling_agent(
-            llm=self.llm,
-            tools=self.tools,
-            prompt=self.prompt
-        )
-        self.agent_executor = AgentExecutor.from_agent_and_tools(
-            agent=self.agent,
-            tools=self.tools,
-            verbose=True,
-            memory=self.memory,
-            handle_parsing_errors=True
-        )
-
-    def change_top_p(self, value: float) -> None:
-        """Change the top_p setting of the language model.
-
-        Args:
-            new_top_p (float): The new top_p value to set.
-        """
-        with open("src/app/settings.json", "r+", encoding='utf-8') as file:
-            settings = json.load(file)
-            settings["user_settings"]["agent_settings"]["top_p"] = value
-            file.seek(0)
-            json.dump(settings, file, indent=4, ensure_ascii=False)
-            file.truncate()
-
-        self.llm.top_p = value
-
-        self.agent = create_tool_calling_agent(
-            llm=self.llm,
-            tools=self.tools,
-            prompt=self.prompt
-        )
-        self.agent_executor = AgentExecutor.from_agent_and_tools(
-            agent=self.agent,
-            tools=self.tools,
-            verbose=True,
-            memory=self.memory,
-            handle_parsing_errors=True
-        )
+            self.agent = create_tool_calling_agent(
+                llm=self.llm,
+                tools=self.tools,
+                prompt=self.prompt
+            )
+            self.agent_executor = AgentExecutor.from_agent_and_tools(
+                agent=self.agent,
+                tools=self.tools,
+                verbose=True,
+                handle_parsing_errors=True
+            )
+        else:
+            raise ValueError(
+                f"Parameter '{param}' is not valid. Choose from {params}.")
