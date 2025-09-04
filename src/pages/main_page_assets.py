@@ -314,11 +314,6 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
             if chat_state.agent:
                 response = chat_state.agent.invoke_agent(text)
 
-                if 'thoughts' in response and response['thoughts']:
-                    for thought in response['thoughts']:
-                        thinking_message.message = f"🦥 {thought['thought']}\n📝 {thought['observation']}"
-                        page.update()
-
                 ai_message = Message(
                     name="Slothy",
                     message=response["output"],
