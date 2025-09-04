@@ -93,20 +93,39 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
                     offset=-1, duration=200)
                 page.update()
 
-            ai_message = Message(
+            thinking_message = Message(
                 name="Slothy",
-                message=chat_state.agent.invoke_agent(
-                    transcribed_text)["output"],
+                message="🦥 Thinking...",
                 is_user=False
             )
-            chat_state.messages.append(ai_message)
+
+            thinking_container = create_message_bubble(thinking_message)
 
             if chat_state.chat_container:
-                chat_state.chat_container.controls.append(
-                    create_message_bubble(ai_message))
-                chat_state.chat_container.scroll_to(
-                    offset=-1, duration=200)
+                chat_state.chat_container.controls.append(thinking_container)
+                chat_state.chat_container.scroll_to(offset=-1, duration=200)
                 page.update()
+
+            if chat_state.agent:
+                text = transcribed_text.strip()
+                response = chat_state.agent.invoke_agent(text)
+
+                ai_message = Message(
+                    name="Slothy",
+                    message=response["output"],
+                    is_user=False
+                )
+
+                if chat_state.chat_container:
+                    chat_state.chat_container.controls.remove(
+                        thinking_container)
+                    chat_state.chat_container.controls.append(
+                        create_message_bubble(ai_message)
+                    )
+                    chat_state.messages.append(ai_message)
+                    chat_state.chat_container.scroll_to(
+                        offset=-1, duration=200)
+                    page.update()
 
     def reconnect_to_ollama(e) -> None:
         """Attempt to reconnect to Ollama service.

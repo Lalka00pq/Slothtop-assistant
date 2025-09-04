@@ -58,7 +58,6 @@ class SlothAgent:
             stop_monitoring_gpu_tool,
             get_weather_tool,
         ]
-        self.agent_name = "Slothy"
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", '''Your name is Slothy. {agent_settings.prompt}'''.format(
                 agent_settings=config.user_settings.agent_settings)),
