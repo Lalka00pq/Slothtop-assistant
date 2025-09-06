@@ -12,8 +12,17 @@ from src.schemas.schemas import Settings
 from langchain_ollama.chat_models import ChatOllama as OllamaLLM
 from langchain.agents import AgentExecutor, create_tool_calling_agent
 import ollama
+from pydantic import BaseModel, Field
 # settings
 config = Settings.from_json_file('src/app/settings.json')
+
+
+class AgentOutput(BaseModel):
+    output: str = Field(description="The main output response from the agent.")
+    tools_used: List[str] = Field(default_factory=list,
+                                  description="List of tools used by the agent in the response.")
+    tool_outputs: dict = Field(default_factory=dict,
+                               description="Outputs from the tools used by the agent.")
 
 
 class SlothAgent:
@@ -73,6 +82,7 @@ class SlothAgent:
                              top_k=config.user_settings.agent_settings.top_k,
                              top_p=config.user_settings.agent_settings.top_p,
                              num_predict=config.user_settings.agent_settings.num_predict)
+        self.llm.with_structured_output(AgentOutput)
         self.agent = create_tool_calling_agent(
             llm=self.llm,
             tools=self.tools,
