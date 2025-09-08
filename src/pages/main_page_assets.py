@@ -58,6 +58,11 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
         bgcolor=ft.Colors.BLUE_600,
         on_click=lambda e: change_microphone_state(e),
     )
+    micr_container = ft.Container(microphone_button,
+                                  bgcolor=ft.Colors.BLUE_600,
+                                  border_radius=ft.border_radius.all(50),
+                                  scale=ft.Scale(scale=1.0),
+                                  animate_scale=ft.Animation(600, ft.AnimationCurve.BOUNCE_OUT),)
 
     microphone_on_message = ft.SnackBar(
         content=ft.Text(
@@ -93,20 +98,39 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
                     offset=-1, duration=200)
                 page.update()
 
-            ai_message = Message(
+            thinking_message = Message(
                 name="Slothy",
-                message=chat_state.agent.invoke_agent(
-                    transcribed_text)["output"],
+                message="🦥 Thinking...",
                 is_user=False
             )
-            chat_state.messages.append(ai_message)
+
+            thinking_container = create_message_bubble(thinking_message)
 
             if chat_state.chat_container:
-                chat_state.chat_container.controls.append(
-                    create_message_bubble(ai_message))
-                chat_state.chat_container.scroll_to(
-                    offset=-1, duration=200)
+                chat_state.chat_container.controls.append(thinking_container)
+                chat_state.chat_container.scroll_to(offset=-1, duration=200)
                 page.update()
+
+            if chat_state.agent:
+                text = transcribed_text.strip()
+                response = chat_state.agent.invoke_agent(text)
+
+                ai_message = Message(
+                    name="Slothy",
+                    message=response["output"],
+                    is_user=False
+                )
+
+                if chat_state.chat_container:
+                    chat_state.chat_container.controls.remove(
+                        thinking_container)
+                    chat_state.chat_container.controls.append(
+                        create_message_bubble(ai_message)
+                    )
+                    chat_state.messages.append(ai_message)
+                    chat_state.chat_container.scroll_to(
+                        offset=-1, duration=200)
+                    page.update()
 
     def reconnect_to_ollama(e) -> None:
         """Attempt to reconnect to Ollama service.
@@ -183,18 +207,17 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
         """
         nonlocal micr_state
         if micr_state:
+            micr_state = False
             microphone_button.icon = ft.Icons.MIC_OFF
             page.open(microphone_off_message)
             page.update()
-            micr_state = False
-            voice_recognition.stop_recording()
+            voice_recognition.stop_recording(micr_container, page)
         else:
+            micr_state = True
             microphone_button.icon = ft.Icons.MIC
             page.open(microphone_on_message)
             page.update()
-
-            micr_state = True
-            voice_recognition.start_recording()
+            voice_recognition.start_recording(micr_container, page)
 
         page.update()
 
@@ -314,11 +337,6 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
             if chat_state.agent:
                 response = chat_state.agent.invoke_agent(text)
 
-                if 'thoughts' in response and response['thoughts']:
-                    for thought in response['thoughts']:
-                        thinking_message.message = f"🦥 {thought['thought']}\n📝 {thought['observation']}"
-                        page.update()
-
                 ai_message = Message(
                     name="Slothy",
                     message=response["output"],
@@ -397,7 +415,7 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
         content=ft.Row(
             controls=[
                 input_field,
-                microphone_button,
+                micr_container,
                 send_button,
             ],
             spacing=12,

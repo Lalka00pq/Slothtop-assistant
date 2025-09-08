@@ -12,8 +12,17 @@ from src.schemas.schemas import Settings
 from langchain_ollama.chat_models import ChatOllama as OllamaLLM
 from langchain.agents import AgentExecutor, create_tool_calling_agent
 import ollama
+from pydantic import BaseModel, Field
 # settings
 config = Settings.from_json_file('src/app/settings.json')
+
+
+class AgentOutput(BaseModel):
+    output: str = Field(description="The main output response from the agent.")
+    tools_used: List[str] = Field(default_factory=list,
+                                  description="List of tools used by the agent in the response.")
+    tool_outputs: dict = Field(default_factory=dict,
+                               description="Outputs from the tools used by the agent.")
 
 
 class SlothAgent:
@@ -47,18 +56,17 @@ class SlothAgent:
             None: None
         """
         self.tools = [
-            open_app_tool,
-            close_app_tool,
-            turn_off_pc_tool,
-            restart_pc_tool,
-            tavily_web_search_tool,
-            start_monitoring_cpu_tool,
-            stop_monitoring_cpu_tool,
-            start_monitoring_gpu_tool,
-            stop_monitoring_gpu_tool,
-            get_weather_tool,
+            # open_app_tool,
+            # close_app_tool,
+            # turn_off_pc_tool,
+            # restart_pc_tool,
+            # tavily_web_search_tool,
+            # start_monitoring_cpu_tool,
+            # stop_monitoring_cpu_tool,
+            # start_monitoring_gpu_tool,
+            # stop_monitoring_gpu_tool,
+            # get_weather_tool,
         ]
-        self.agent_name = "Slothy"
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", '''Your name is Slothy. {agent_settings.prompt}'''.format(
                 agent_settings=config.user_settings.agent_settings)),
@@ -74,6 +82,7 @@ class SlothAgent:
                              top_k=config.user_settings.agent_settings.top_k,
                              top_p=config.user_settings.agent_settings.top_p,
                              num_predict=config.user_settings.agent_settings.num_predict)
+        self.llm.with_structured_output(AgentOutput)
         self.agent = create_tool_calling_agent(
             llm=self.llm,
             tools=self.tools,

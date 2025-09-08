@@ -7,10 +7,9 @@
             "temperature": 0.3,
             "default_model": "llama3.2",
             "prompt": "You are a helpful assistant, you should use tools to help users with their tasks. You are a tool-using assistant.",
-            "num_predict": 128,
+            "num_predict": 1024,
             "top_k": 78,
-            "top_p": 0.8,
-            "max_iterations": 3
+            "top_p": 0.8
         }
     },
     "default_settings": {
@@ -23,8 +22,8 @@
             "prompt": "You are a helpful assistant, you should use tools to help users with their tasks. You are a tool-using assistant.",
             "num_predict": 1024,
             "top_k": 40,
-            "top_p": 0.95,
-            "max_iterations": 3
+            "top_p": 0.95
+            
         }
     }
 }
