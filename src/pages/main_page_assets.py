@@ -58,6 +58,11 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
         bgcolor=ft.Colors.BLUE_600,
         on_click=lambda e: change_microphone_state(e),
     )
+    micr_container = ft.Container(microphone_button,
+                                  bgcolor=ft.Colors.BLUE_600,
+                                  border_radius=ft.border_radius.all(50),
+                                  scale=ft.Scale(scale=1.0),
+                                  animate_scale=ft.Animation(600, ft.AnimationCurve.BOUNCE_OUT),)
 
     microphone_on_message = ft.SnackBar(
         content=ft.Text(
@@ -202,18 +207,17 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
         """
         nonlocal micr_state
         if micr_state:
+            micr_state = False
             microphone_button.icon = ft.Icons.MIC_OFF
             page.open(microphone_off_message)
             page.update()
-            micr_state = False
-            voice_recognition.stop_recording()
+            voice_recognition.stop_recording(micr_container, page)
         else:
+            micr_state = True
             microphone_button.icon = ft.Icons.MIC
             page.open(microphone_on_message)
             page.update()
-
-            micr_state = True
-            voice_recognition.start_recording()
+            voice_recognition.start_recording(micr_container, page)
 
         page.update()
 
@@ -411,7 +415,7 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
         content=ft.Row(
             controls=[
                 input_field,
-                microphone_button,
+                micr_container,
                 send_button,
             ],
             spacing=12,

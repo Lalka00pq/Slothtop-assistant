@@ -6,6 +6,7 @@ import queue
 import tempfile
 from faster_whisper import WhisperModel
 import torch
+import flet as ft
 
 
 class VoiceRecognition:
@@ -41,9 +42,9 @@ class VoiceRecognition:
         """Check if the audio chunk is silent."""
         return np.max(np.abs(audio_data)) < self.silence_threshold
 
-    def _record_and_transcribe(self) -> None:
+    def _record_and_transcribe(self, container: ft.Container, page: ft.Page) -> None:
         """Record audio and transcribe it using the Whisper model."""
-        self._initialize_model()
+        # self._initialize_model()
 
         self.stream = sd.InputStream(
             samplerate=self.SAMPLE_RATE,
@@ -65,6 +66,8 @@ class VoiceRecognition:
                     current_time = len(audio_buffer) / self.SAMPLE_RATE
 
                     if self._is_silent(data):
+                        container.scale = 1.0
+                        page.update()
                         silence_duration += 0.1  # 100ms chunk
                         if silence_duration >= self.pause_duration and speech_duration >= self.min_speech_duration:
                             block = audio_buffer
@@ -72,6 +75,8 @@ class VoiceRecognition:
                             silence_duration = 0
                             speech_duration = 0
                     else:
+                        container.scale = 1.2
+                        page.update()
                         silence_duration = 0
                         speech_duration = current_time - last_speech_time
                         last_speech_time = current_time
@@ -94,7 +99,6 @@ class VoiceRecognition:
                         process_buffer = True
                         silence_duration = 0
                         speech_duration = 0
-
                     if process_buffer and block is not None and len(block) > 0:
 
                         if self.model:
@@ -125,18 +129,20 @@ class VoiceRecognition:
                 self.stream.close()
                 self.stream = None
 
-    def start_recording(self):
+    def start_recording(self, container: ft.Container, page: ft.Page):
         """Start recording audio."""
         if not self.recording:
             print("Starting audio recording...")
             self._initialize_model()
             self.recording = True
-            self._record_and_transcribe()
+            self._record_and_transcribe(container=container, page=page)
 
-    def stop_recording(self):
+    def stop_recording(self, container: ft.Container, page: ft.Page):
         """Stop recording audio."""
         if self.recording:
             print("Stopping audio recording...")
+            container.scale = 1.0
+            page.update()
             self.recording = False
             if self.stream:
                 self.stream.stop()

@@ -56,16 +56,16 @@ class SlothAgent:
             None: None
         """
         self.tools = [
-            open_app_tool,
-            close_app_tool,
-            turn_off_pc_tool,
-            restart_pc_tool,
-            tavily_web_search_tool,
-            start_monitoring_cpu_tool,
-            stop_monitoring_cpu_tool,
-            start_monitoring_gpu_tool,
-            stop_monitoring_gpu_tool,
-            get_weather_tool,
+            # open_app_tool,
+            # close_app_tool,
+            # turn_off_pc_tool,
+            # restart_pc_tool,
+            # tavily_web_search_tool,
+            # start_monitoring_cpu_tool,
+            # stop_monitoring_cpu_tool,
+            # start_monitoring_gpu_tool,
+            # stop_monitoring_gpu_tool,
+            # get_weather_tool,
         ]
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", '''Your name is Slothy. {agent_settings.prompt}'''.format(
