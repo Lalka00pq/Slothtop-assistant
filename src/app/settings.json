@@ -4,9 +4,12 @@
             "theme": "dark"
         },
         "agent_settings": {
-            "name": "Sloth",
-            "prompt": "You are a helpful assistant. Use the tools only if it's necessary (for example, if the user asks to open an application, you should use tools, but if the user asks a general question (for example, how are you), you can answer without using tools).",
-            "model": "llama3.2"
+            "temperature": 0.3,
+            "default_model": "llama3.2",
+            "prompt": "You are a helpful assistant, you should use tools to help users with their tasks. You are a tool-using assistant.",
+            "num_predict": 1024,
+            "top_k": 78,
+            "top_p": 0.8
         }
     },
     "default_settings": {
@@ -14,9 +17,13 @@
             "theme": "dark"
         },
         "agent_settings": {
-            "name": "Sloth",
-            "prompt": "You are a helpful assistant. Use the tools only if it's necessary (for example, if the user asks to open an application, you should use tools, but if the user asks a general question (for example, how are you), you can answer without using tools).",
-            "model": "llama3.2"
+            "temperature": 0.7,
+            "default_model": "llama3.2",
+            "prompt": "You are a helpful assistant, you should use tools to help users with their tasks. You are a tool-using assistant.",
+            "num_predict": 1024,
+            "top_k": 40,
+            "top_p": 0.95
+            
         }
     }
 }

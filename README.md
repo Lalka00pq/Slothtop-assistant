@@ -4,7 +4,7 @@
 </p>
 
 >[!important] 
->New update is here!!!. In 0.2.2v was added voice recognition. Now you can use your voice to interact with assistant!
+>New update is here!!!. In 0.3.0v was improved voice recognition. Also agent can check your Internet speed and show information about your PC drives. 
 
 >[!warning] 
 >**Project isn't ready yet**, this is only the demo version. The project may contain bugs and critical errors.
@@ -26,6 +26,8 @@ This is the project of AI assistant Slothtop. You can chat with him and he will 
 - Show you the CPU and GPU monitoring pages (example: Start CPU monitoring/Start GPU monitoring)
 - Open and close apps on your PC (example: Can you open Obsidian/Firefox and etc, Can you close Obsidian/Firefox and etc)
 - Show the weather in cities (Tomorrow API) (example: Show me the weather in New York)
+- Show Internet speed (example: Show me the info about my Internet speed)
+- Display drives information (example: Show me the info about my drives)
 ****
 >[!note] 
 >New tools will be added in the future 

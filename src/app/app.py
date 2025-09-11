@@ -40,7 +40,7 @@ def app_page(page: ft.Page) -> None:
     page.spacing = 20
 
     # Window setup
-    page.window.width = 600
+    page.window.width = 800
     page.window.height = 800
     page.window.min_width = 500
     page.window.min_height = 500

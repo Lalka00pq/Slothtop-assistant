@@ -10,9 +10,13 @@ class AppSettings(BaseModel):
 
 class AgentSettings(BaseModel):
     """Agent settings model."""
-    name: str = Field(default="Slothtop")
-    prompt: str = Field(default="You are a helpful assistant. Use the tools only if it's necessary (for example, if the user asks to open an application, you should use tools, but if the user asks a general question (for example, how are you), you can answer without using tools).")
-    model: str = Field(default="llama3.2")
+    temperature: float = Field(default=0.7)
+    default_model: str = Field(default="llama3.2")
+    prompt: str = Field(
+        default="You are a helpful assistant, you should use tools to help users with their tasks. If user just chat with you, you should stop this chat and say that you are a tool-using assistant.")
+    num_predict: int = Field(default=128)
+    top_k: int = Field(default=40)
+    top_p: float = Field(default=0.95)
 
 
 class UserSettings(BaseModel):

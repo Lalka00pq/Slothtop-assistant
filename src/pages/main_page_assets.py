@@ -1,10 +1,13 @@
 # project
+import flet as ft
 from src.schemas.classes import Message, ChatState
 from src.models.models import Models
 from src.voice.voice_recognition import VoiceRecognition
 from src.agent.agent_state import initialize_chat_state, create_message_bubble
-# 3rd party
-import flet as ft
+from src.schemas.schemas import Settings
+
+# settings
+config = Settings.from_json_file('src/app/settings.json')
 
 
 def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> ft.View:
@@ -55,6 +58,11 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
         bgcolor=ft.Colors.BLUE_600,
         on_click=lambda e: change_microphone_state(e),
     )
+    micr_container = ft.Container(microphone_button,
+                                  bgcolor=ft.Colors.BLUE_600,
+                                  border_radius=ft.border_radius.all(50),
+                                  scale=ft.Scale(scale=1.0),
+                                  animate_scale=ft.Animation(600, ft.AnimationCurve.BOUNCE_OUT),)
 
     microphone_on_message = ft.SnackBar(
         content=ft.Text(
@@ -90,20 +98,39 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
                     offset=-1, duration=200)
                 page.update()
 
-            ai_message = Message(
-                name="Slothtop Assistant",
-                message=chat_state.agent.invoke_agent(
-                    transcribed_text)["output"],
+            thinking_message = Message(
+                name="Slothy",
+                message="🦥 Thinking...",
                 is_user=False
             )
-            chat_state.messages.append(ai_message)
+
+            thinking_container = create_message_bubble(thinking_message)
 
             if chat_state.chat_container:
-                chat_state.chat_container.controls.append(
-                    create_message_bubble(ai_message))
-                chat_state.chat_container.scroll_to(
-                    offset=-1, duration=200)
+                chat_state.chat_container.controls.append(thinking_container)
+                chat_state.chat_container.scroll_to(offset=-1, duration=200)
                 page.update()
+
+            if chat_state.agent:
+                text = transcribed_text.strip()
+                response = chat_state.agent.invoke_agent(text)
+
+                ai_message = Message(
+                    name="Slothy",
+                    message=response["output"],
+                    is_user=False
+                )
+
+                if chat_state.chat_container:
+                    chat_state.chat_container.controls.remove(
+                        thinking_container)
+                    chat_state.chat_container.controls.append(
+                        create_message_bubble(ai_message)
+                    )
+                    chat_state.messages.append(ai_message)
+                    chat_state.chat_container.scroll_to(
+                        offset=-1, duration=200)
+                    page.update()
 
     def reconnect_to_ollama(e) -> None:
         """Attempt to reconnect to Ollama service.
@@ -180,18 +207,17 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
         """
         nonlocal micr_state
         if micr_state:
+            micr_state = False
             microphone_button.icon = ft.Icons.MIC_OFF
             page.open(microphone_off_message)
             page.update()
-            micr_state = False
-            voice_recognition.stop_recording()
+            voice_recognition.stop_recording(micr_container, page)
         else:
+            micr_state = True
             microphone_button.icon = ft.Icons.MIC
             page.open(microphone_on_message)
             page.update()
-
-            micr_state = True
-            voice_recognition.start_recording()
+            voice_recognition.start_recording(micr_container, page)
 
         page.update()
 
@@ -279,40 +305,51 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
             e : The event triggered by the button click.
         """
         if (input_field.value and input_field.value.strip() and chat_state.agent is not None):
-            # Create and save user message
+            text = input_field.value.strip()
+            input_field.value = ""
+
             user_message = Message(
                 name="You",
-                message=input_field.value.strip(),
+                message=text,
                 is_user=True
             )
             chat_state.messages.append(user_message)
 
-            # Update UI with user message
             if chat_state.chat_container:
                 chat_state.chat_container.controls.append(
-                    create_message_bubble(user_message))
-                chat_state.chat_container.scroll_to(
-                    offset=-1, duration=200)
+                    create_message_bubble(user_message)
+                )
+                chat_state.chat_container.scroll_to(offset=-1, duration=200)
                 page.update()
 
-            # Clear input and get response
-            text = input_field.value.strip()
-            input_field.value = ""
-            page.update()
+            thinking_message = Message(
+                name="Slothy",
+                message="🦥 Thinking...",
+                is_user=False
+            )
+            thinking_container = create_message_bubble(thinking_message)
 
-            # Create and save AI message
+            if chat_state.chat_container:
+                chat_state.chat_container.controls.append(thinking_container)
+                chat_state.chat_container.scroll_to(offset=-1, duration=200)
+                page.update()
+
             if chat_state.agent:
+                response = chat_state.agent.invoke_agent(text)
+
                 ai_message = Message(
-                    name="Slothtop Assistant",
-                    message=chat_state.agent.invoke_agent(text)["output"],
+                    name="Slothy",
+                    message=response["output"],
                     is_user=False
                 )
-                chat_state.messages.append(ai_message)
 
-                # Update UI with AI message
                 if chat_state.chat_container:
+                    chat_state.chat_container.controls.remove(
+                        thinking_container)
                     chat_state.chat_container.controls.append(
-                        create_message_bubble(ai_message))
+                        create_message_bubble(ai_message)
+                    )
+                    chat_state.messages.append(ai_message)
                     chat_state.chat_container.scroll_to(
                         offset=-1, duration=200)
                     page.update()
@@ -358,7 +395,7 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
                                 "Image not found", color=ft.Colors.RED_400),
                         ),
                         ft.Text(
-                            "Slothtop Assistant",
+                            "Slothy Assistant",
                             size=24,
                             weight=ft.FontWeight.BOLD,
                             color=ft.Colors.WHITE
@@ -378,7 +415,7 @@ def create_main_view(page: ft.Page, chat_state: ChatState, micr_state: bool) -> 
         content=ft.Row(
             controls=[
                 input_field,
-                microphone_button,
+                micr_container,
                 send_button,
             ],
             spacing=12,

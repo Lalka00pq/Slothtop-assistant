@@ -17,7 +17,7 @@ def turn_off_pc_tool(time: int = 5) -> str:
     Args:
         time (int, optional): The time in seconds to wait before shutting down. Defaults to 5.
     Returns:
-        str: A message indicating the result of the operation.
+        str: A message indicating the turning off PC.
     """
     try:
         os.system(f"shutdown /s /t {time}")
@@ -33,7 +33,7 @@ def restart_pc_tool(time: int = 5) -> str:
     Args:
         time (int, optional): The time in seconds to wait before restarting. Defaults to 5.
     Returns:
-        str: A message indicating the result of the operation.
+        str: A message indicating the restarting PC.
     """
     try:
         os.system(f"shutdown /r /t {time}")
@@ -49,7 +49,7 @@ def open_app_tool(app: str) -> str:
     Args:
         app (str): The name of the application to open.
     Returns:
-        str: A message indicating the result of the operation.
+        str: A message about the opening app.
     """
 
     try:
@@ -66,7 +66,7 @@ def close_app_tool(app: str) -> str:
     Args:
         app (str): The name of the application to close.
     Returns:
-        str: A message indicating the result of the operation.
+        str: A message about the closing app.
     """
     try:
         close_app(app.lower(), match_closest=True, throw_error=True)
@@ -82,7 +82,7 @@ def get_weather_tool(location: str) -> str:
     Args:
         location (str): The location to get the weather for.
     Returns:
-        str: A message indicating the result of the operation.
+        str: A message about the current weather in the specified location.
     """
     try:
         headers = {
