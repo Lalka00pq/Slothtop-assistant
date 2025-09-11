@@ -3,7 +3,7 @@ from langchain.tools import tool
 
 
 @tool
-def get_disk_info() -> dict:
+def get_drives_info() -> dict:
     """Get information about all drives on the system.
 
     Returns:

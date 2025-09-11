@@ -5,7 +5,7 @@ import json
 # project
 from src.tools.tools import open_app_tool, close_app_tool, turn_off_pc_tool, restart_pc_tool, get_weather_tool
 from src.tools.computer_state_tools.monitoring_tools.monitoring_tool import start_monitoring_cpu_tool, stop_monitoring_cpu_tool, start_monitoring_gpu_tool, stop_monitoring_gpu_tool
-from src.tools.computer_state_tools.drives_info import get_disk_info
+from src.tools.computer_state_tools.drives_info import get_drives_info
 from src.tools.web_work_tools import tavily_web_search_tool
 from src.tools.internet_speed import test_internet_speed
 from langchain_core.prompts import ChatPromptTemplate
@@ -69,7 +69,7 @@ class SlothAgent:
             start_monitoring_gpu_tool,
             stop_monitoring_gpu_tool,
             get_weather_tool,
-            get_disk_info,
+            get_drives_info,
         ]
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", '''Your name is Slothy. {agent_settings.prompt}'''.format(
