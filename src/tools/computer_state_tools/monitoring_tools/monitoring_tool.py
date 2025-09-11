@@ -7,7 +7,7 @@ from typing import List
 import flet as ft  # type: ignore
 import psutil
 from langchain.tools import tool  # type: ignore
-from src.tools.monitoring_tools.monitoring_class import Monitor
+from src.tools.computer_state_tools.monitoring_tools.monitoring_class import Monitor
 import GPUtil  # type: ignore
 
 
