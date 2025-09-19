@@ -97,6 +97,6 @@ or
 You can change model's temperature, top_k, top_p and num_predict parameters in the settings of the app.
 ## 📸Screenshots
 <p align="center">
-   <center><img src='screenshots/Main page.png'></center>
+   <center><img src='screenshots/Main Page.png'></center>
    <center><img src='screenshots/Settings page.png'></center>
 </p>
