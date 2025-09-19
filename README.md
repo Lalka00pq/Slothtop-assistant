@@ -1,4 +1,4 @@
-# Slothtop Assistant
+# Slothy Assistant
 <p align="center">
    <img src='screenshots/86f52602-691d-4af2-b451-37f4e1d93510.jpg' width=420 height=350>
 </p>
@@ -14,7 +14,7 @@
 
 ## 🦥About project
 
-This is the project of AI assistant Slothtop. You can chat with him and he will response to you. Slothtop uses Ollama models and can use tools to do some actions. 
+This is the project of AI assistant Slothy. You can chat with him and he will response to you. Slothy uses Ollama models and can use tools to do some actions. 
 
 >[!note] 
 >If you want, you can take and use this project as a template for your own AI assistants. 
@@ -94,9 +94,9 @@ or
   uv run main.py
 ```
 ## Settings 
-You can change prompt or assistant's name in the settings of the app.
+You can change model's temperature, top_k, top_p and num_predict parameters in the settings of the app.
 ## 📸Screenshots
 <p align="center">
-   <center><img src='screenshots/Main_page.png'></center>
-   <center><img src='screenshots/Settings_page.png'></center>
+   <center><img src='screenshots/Main page.png'></center>
+   <center><img src='screenshots/Settings page.png'></center>
 </p>
