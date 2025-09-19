@@ -50,12 +50,12 @@ This is the project of AI assistant Slothy. You can chat with him and he will re
 ### Installation 
 1) Clone the repository
 ```bash
-  git clone https://github.com/Lalka00pq/Slothtop-assistant
+  git clone https://github.com/Lalka00pq/Slothy-assistant
 ```
 
 2) Go to the project directory
 ```bash
-  cd slothtop-assistant
+  cd Slothy-assistant
 ```
 3) Create `venv` in the project directory
 ```bash
